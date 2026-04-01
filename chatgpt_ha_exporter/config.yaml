@@ -1,0 +1,116 @@
+name: "ChatGPT HA Exporter"
+version: "0.5.8"
+slug: "chatgpt_ha_exporter"
+description: >-
+  Exportiert ein sanitisiertes Analyse-Paket für ChatGPT mit erweitertem Runtime-,
+  Recorder-, Backup-/Restore-, Trace-, Security-, Helper-, Theme-, ESPHome- und Refactoring-Kontext.
+startup: once
+init: false
+hassio_api: true
+hassio_role: manager
+homeassistant_api: true
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+map:
+  - type: homeassistant_config
+    read_only: true
+  - type: share
+    read_only: false
+options:
+  export_name_prefix: "ha_chatgpt_export"
+  include_current_state_snapshot: true
+  include_service_catalog: true
+  include_dashboards: true
+  include_blueprints: true
+  include_custom_components: true
+  include_python_scripts: true
+  include_pyscript: true
+  include_appdaemon: true
+  include_esphome: true
+  include_themes: true
+  include_logs: true
+  include_log_archives: true
+  max_log_lines: 500
+  include_recorder_summary: true
+  include_recorder_deep_export: true
+  include_recorder_db_copy: false
+  recorder_days: 3
+  recorder_state_sample_limit: 2000
+  recorder_event_sample_limit: 1000
+  recorder_statistics_limit: 500
+  recorder_entity_history_limit: 100
+  include_raw_storage_files: true
+  include_extended_storage: true
+  include_security_storage: true
+  include_backup_metadata: true
+  include_frontend_storage: true
+  include_trace_storage: true
+  include_helper_source_definitions: true
+  include_template_source_definitions: true
+  include_relationship_integrity_report: true
+  include_supervisor_logs: true
+  include_addon_logs: true
+  addon_log_lines: 250
+  include_multi_state_snapshots: true
+  multi_state_snapshot_count: 3
+  multi_state_snapshot_interval_seconds: 4
+  include_backup_deep_context: true
+  include_operator_intent_template: true
+  include_operator_intent_import: true
+  include_security_exposure_report: true
+  include_addon_options_export: true
+  include_integration_profiles: true
+  include_uncertainty_register: true
+  include_addon_stats: true
+  slim_hacs_assets: true
+schema:
+  export_name_prefix: str
+  include_current_state_snapshot: bool
+  include_service_catalog: bool
+  include_dashboards: bool
+  include_blueprints: bool
+  include_custom_components: bool
+  include_python_scripts: bool
+  include_pyscript: bool
+  include_appdaemon: bool
+  include_esphome: bool
+  include_themes: bool
+  include_logs: bool
+  include_log_archives: bool
+  max_log_lines: int(100,50000)
+  include_recorder_summary: bool
+  include_recorder_deep_export: bool
+  include_recorder_db_copy: bool
+  recorder_days: int(1,365)
+  recorder_state_sample_limit: int(100,200000)
+  recorder_event_sample_limit: int(100,200000)
+  recorder_statistics_limit: int(10,5000)
+  recorder_entity_history_limit: int(10,5000)
+  include_raw_storage_files: bool
+  include_extended_storage: bool
+  include_security_storage: bool
+  include_backup_metadata: bool
+  include_frontend_storage: bool
+  include_trace_storage: bool
+  include_helper_source_definitions: bool
+  include_template_source_definitions: bool
+  include_relationship_integrity_report: bool
+  include_supervisor_logs: bool
+  include_addon_logs: bool
+  addon_log_lines: int(50,10000)
+  include_multi_state_snapshots: bool
+  multi_state_snapshot_count: int(2,20)
+  multi_state_snapshot_interval_seconds: int(1,300)
+  include_backup_deep_context: bool
+  include_operator_intent_template: bool
+  include_operator_intent_import: bool
+  include_security_exposure_report: bool
+  include_addon_options_export: bool
+  include_integration_profiles: bool
+  include_uncertainty_register: bool
+  include_addon_stats: bool
+  slim_hacs_assets: bool

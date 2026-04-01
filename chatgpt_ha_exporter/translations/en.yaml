@@ -1,0 +1,139 @@
+configuration:
+  export_name_prefix:
+    name: Export name prefix
+    description: Prefix used for the generated archive name in /share.
+  include_current_state_snapshot:
+    name: Include current state snapshot
+    description: Export a sanitized snapshot of current Home Assistant states.
+  include_service_catalog:
+    name: Include service catalog
+    description: Export the currently available Home Assistant services catalog.
+  include_dashboards:
+    name: Include dashboards
+    description: Export Lovelace dashboards and related dashboard metadata.
+  include_blueprints:
+    name: Include blueprints
+    description: Export Home Assistant blueprint files and normalized metadata.
+  include_custom_components:
+    name: Include custom components
+    description: Export custom_components with sanitization applied.
+  include_python_scripts:
+    name: Include python_scripts
+    description: Export the python_scripts directory if present.
+  include_pyscript:
+    name: Include pyscript
+    description: Export the pyscript directory if present.
+  include_appdaemon:
+    name: Include AppDaemon
+    description: Export the appdaemon directory if present.
+  include_esphome:
+    name: Include ESPHome
+    description: Export ESPHome source files and related metadata if present.
+  include_themes:
+    name: Include themes
+    description: Export configured frontend themes and theme diagnostics.
+  include_logs:
+    name: Include logs
+    description: Export sanitized Home Assistant core logs.
+  include_log_archives:
+    name: Include archived logs
+    description: Export archived Home Assistant log files when available.
+  max_log_lines:
+    name: Maximum log lines
+    description: Maximum number of lines to keep per exported log file.
+  include_recorder_summary:
+    name: Include recorder summary
+    description: Export a recorder summary based on the current recorder database.
+  include_recorder_deep_export:
+    name: Include deep recorder export
+    description: Export recorder state, event and statistics samples in addition to the summary.
+  include_recorder_db_copy:
+    name: Include recorder DB copy
+    description: Copy the Home Assistant recorder SQLite database into the export package.
+  recorder_days:
+    name: Recorder lookback days
+    description: Number of days to consider for recorder-based exports.
+  recorder_state_sample_limit:
+    name: Recorder state sample limit
+    description: Maximum number of recorder state rows to export.
+  recorder_event_sample_limit:
+    name: Recorder event sample limit
+    description: Maximum number of recorder event rows to export.
+  recorder_statistics_limit:
+    name: Recorder statistics limit
+    description: Maximum number of recorder statistics rows to export.
+  recorder_entity_history_limit:
+    name: Recorder entity history limit
+    description: Maximum number of entity history rows per entity in deep recorder exports.
+  include_raw_storage_files:
+    name: Include raw storage files
+    description: Include sanitized raw copies of exported .storage files.
+  include_extended_storage:
+    name: Include extended storage
+    description: Export additional .storage files beyond the basic registries.
+  include_security_storage:
+    name: Include security-related storage
+    description: Export sanitized security-, auth- and exposure-related .storage data.
+  include_backup_metadata:
+    name: Include backup metadata
+    description: Export backup metadata and summary information.
+  include_frontend_storage:
+    name: Include frontend storage
+    description: Export frontend-, panel- and UI-related .storage files.
+  include_trace_storage:
+    name: Include trace storage
+    description: Export automation trace and repairs issue storage data.
+  include_helper_source_definitions:
+    name: Include helper source definitions
+    description: Export helper definitions from YAML and supported storage files.
+  include_template_source_definitions:
+    name: Include template source definitions
+    description: Export template definitions from YAML and UI-managed config entries.
+  include_relationship_integrity_report:
+    name: Include relationship integrity report
+    description: Generate a report validating device, entity, area and config-entry linkage.
+  include_supervisor_logs:
+    name: Include Supervisor logs
+    description: Export the latest sanitized Supervisor log.
+  include_addon_logs:
+    name: Include add-on logs
+    description: Export latest sanitized logs for installed add-ons when available.
+  addon_log_lines:
+    name: Add-on log lines
+    description: Maximum number of lines to keep per exported add-on log.
+  include_multi_state_snapshots:
+    name: Include multiple state snapshots
+    description: Capture multiple state snapshots over time and write a delta summary.
+  multi_state_snapshot_count:
+    name: State snapshot count
+    description: Number of state snapshots to capture during the export run.
+  multi_state_snapshot_interval_seconds:
+    name: State snapshot interval seconds
+    description: Seconds to wait between captured state snapshots.
+  include_backup_deep_context:
+    name: Include backup deep context
+    description: Export supervisor backup and mount context for restore analysis.
+  include_operator_intent_template:
+    name: Include operator intent template
+    description: Add a template file that helps document operator intent for later analysis.
+  include_operator_intent_import:
+    name: Include operator intent import
+    description: Import operator_intent files from Home Assistant config or share when present.
+  include_security_exposure_report:
+    name: Include security exposure report
+    description: Generate a structured security and exposure context report from YAML, storage and API data.
+  include_addon_options_export:
+    name: Include add-on options export
+    description: Export sanitized add-on option and schema profiles via the Supervisor API.
+  include_integration_profiles:
+    name: Include integration profiles
+    description: Generate focused profiles for critical integrations such as ESPHome, MQTT, Broadlink and HACS.
+  include_uncertainty_register:
+    name: Include uncertainty register
+    description: Generate a machine-readable register of export gaps and remaining uncertainty.
+  include_addon_stats:
+    name: Include add-on stats
+    description: Query add-on stats endpoints and export supported results.
+  slim_hacs_assets:
+    name: Slim HACS assets
+    description: Skip bulky HACS frontend bundles, maps, compressed assets and fonts when exporting custom_components.
