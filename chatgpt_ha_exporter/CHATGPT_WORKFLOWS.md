@@ -1,96 +1,160 @@
-# Empfohlene Workflows mit ChatGPT
+# ChatGPT HA Exporter – Empfohlene Workflows mit ChatGPT
 
-Diese Datei beschreibt die **empfohlenen Arbeitsweisen mit ChatGPT** für den ChatGPT HA Exporter.
+Diese Datei beschreibt die **empfohlene operative Nutzung** des ChatGPT HA Exporters mit ChatGPT.
 
-Sie verfolgt zwei Hauptziele:
+Sie ergänzt die übrige Dokumentation wie folgt:
 
-- dein **bestehendes** Home-Assistant-Setup möglichst sicher analysieren, verbessern und refactoren
-- bei Bedarf dein aktuelles Setup **komplett neu und ohne Altlasten** aufbauen lassen, ohne die historische Struktur ungeprüft zu übernehmen
+- `README.md` → Einstieg und Installation
+- `DOCS.md` → technische Erklärung des Exporters
+- `EXPORT_SCHEMA.md` → Strukturvertrag des Exportarchivs
+- `CHATGPT_WORKFLOWS.md` → **praktische Nutzung, Rollenmodell, Übergabe und Prompts**
 
-Die zentrale Empfehlung lautet:
+Die Grundregel dieses Projekts lautet:
 
-> Nutze **nicht dieselbe ChatGPT-Instanz** für Rohanalyse, Aufbereitung, Zielarchitektur und konkrete Umsetzung.
+> Nutze **nicht dieselbe ChatGPT-Instanz** für Rohdatenanalyse, Zielbild-Definition und konkrete Umsetzungsplanung.
 >
-> Für hohe Qualität ist ein **mehrstufiger Workflow** besser.
+> Für hohe Qualität ist ein **zweistufiger Workflow mit zwei Instanzen** die empfohlene Standardvorgehensweise.
 
 ---
 
-## 1. Überblick: Welcher Workflow für welches Ziel?
+## 1. Wann welchen Workflow verwenden?
 
-### Workflow A – Bestehendes System verbessern
+## 1.1 Workflow A – Bestehendes Home Assistant verbessern
 
 Nutze diesen Workflow, wenn du:
 
-- dein aktuelles Setup behalten willst
+- dein aktuelles Setup grundsätzlich behalten willst
 - Altlasten gezielt abbauen willst
-- Optimierungen, Bugfixes, Sicherheitsverbesserungen und Refactorings auf Basis des Ist-Systems willst
-- das aktuelle Setup als Ausgangspunkt erhalten möchtest
+- Performance-, Sicherheits- und Wartbarkeitsprobleme lösen willst
+- Refactorings, Bereinigung und Standardisierung auf Basis des Ist-Systems willst
+- das bestehende Verhalten möglichst kontrolliert erhalten möchtest
 
-**Empfehlung:** Zwei Instanzen
+**Ziel:**
+Das bestehende Home Assistant systematisch verbessern, ohne unnötig funktionierende Logik zu zerstören.
 
-- **Instanz 1:** Analyse, Aufbereitung, Inventarisierung, Lücken- und Risikoerkennung
-- **Instanz 2:** konkrete Verbesserung, Optimierung, Refactoring, Migrationsvorschläge
+**Empfohlene Rollen:**
 
-### Workflow B – Home Assistant von Grund auf neu aufbauen
+- **Instanz 1:** Analyse, Aufbereitung, Inventarisierung, Unsicherheits- und Risikoerkennung
+- **Instanz 2:** konkrete Optimierung, Refactoring, Zielstruktur und Umsetzungsplanung
+
+---
+
+## 1.2 Workflow B – Home Assistant komplett neu aufbauen
 
 Nutze diesen Workflow, wenn du:
 
-- dein aktuelles Setup **nicht direkt weiterentwickeln**, sondern **neu aufsetzen** willst
-- Altlasten, historisch gewachsene Strukturen, inkonsistente Benennung und Workarounds **nicht übernehmen** willst
-- eine saubere Zielarchitektur aus Anforderungen statt aus Altbestand bauen willst
-- das bestehende System nur noch als **Quellmaterial für Anforderungen, Verhalten und Prioritäten** verwenden willst
+- dein aktuelles Setup **nicht direkt weiterentwickeln**, sondern **sauber neu aufbauen** willst
+- historisch gewachsene Struktur, Workarounds und Inkonsistenzen **nicht übernehmen** willst
+- das bestehende System nur noch als **Anforderungsquelle**, nicht als Strukturvorlage verwenden willst
+- eine klare Zielarchitektur, Namenskonventionen und Domänengrenzen von Grund auf definieren willst
 
-**Empfehlung:** Ebenfalls zwei Instanzen
+**Ziel:**
+Ein neues Home-Assistant-Zielsystem aufbauen, das fachlich alles Relevante übernimmt, aber strukturell **keine Altlasten mitschleppt**.
 
-- **Instanz 1:** extrahiert Anforderungen, Regeln, Geräteklassen, Domänenlogik, Betriebsabsicht und Zielprinzipien aus dem Altbestand
-- **Instanz 2:** entwirft und erzeugt ein **sauberes Zielsystem von Grund auf**, ohne Altlasten blind mitzuschleppen
+**Empfohlene Rollen:**
 
----
-
-## 2. Grundprinzipien für gute Ergebnisse
-
-Unabhängig vom Workflow gelten diese Regeln:
-
-1. **Export zuerst erzeugen**
-   - immer mit dem aktuellen ChatGPT HA Exporter
-   - möglichst mit aktivierten Runtime-, Trace-, Security- und Storage-Daten
-
-2. **Rohdaten nicht sofort refactoren lassen**
-   - zuerst strukturieren, prüfen, normalisieren, priorisieren
-
-3. **Fakten, Schlussfolgerungen und Unsicherheiten trennen**
-   - besonders wichtig bei Home Assistant, weil viele Probleme nicht aus einzelnen Dateien, sondern aus Zusammenspiel, Runtime und Betreiberabsicht entstehen
-
-4. **Operator Intent ergänzen**
-   - wenn möglich `operator_intent.md` oder `operator_intent.json` mitgeben
-   - dadurch reduziert sich die Restunsicherheit stark
-
-5. **Menschliche Freigabe zwischen den Stufen**
-   - nach Instanz 1 kurz prüfen, ob die Analyse korrekt und vollständig wirkt
-   - erst danach Instanz 2 auf konkrete Änderungen ansetzen
+- **Instanz 1:** extrahiert Anforderungen, Regeln, Geräteklassen, Betriebsabsicht und Muss-Funktionen
+- **Instanz 2:** entwirft daraus das neue Zielsystem, ohne die Altsystem-Struktur ungeprüft zu spiegeln
 
 ---
 
-## 3. Workflow A – Bestehendes Setup analysieren und verbessern
+## 2. Grundregeln für gute Ergebnisse
+
+Diese Regeln gelten unabhängig vom gewählten Workflow.
+
+### 2.1 Export zuerst
+
+Arbeite immer mit einem **aktuellen Export** aus dem ChatGPT HA Exporter.
+
+Für hochwertige Ergebnisse sind in der Regel sinnvoll:
+
+- Storage-Kontext
+- Runtime-Kontext
+- Logs
+- Recorder-Zusammenfassungen oder Recorder-Deep-Export
+- Security-/Exposure-Report
+- Integrationsprofile
+- Uncertainty Register
+
+### 2.2 Rohdaten nicht sofort refactoren lassen
+
+Rohdaten sollten zuerst:
+
+- inventarisiert
+- normalisiert
+- geprüft
+- priorisiert
+- mit Unsicherheiten markiert
+
+werden.
+
+Erst danach sollte eine zweite Instanz konkrete Änderungen planen.
+
+### 2.3 Fakten, Schlussfolgerungen und Unsicherheiten trennen
+
+Home-Assistant-Probleme entstehen oft nicht durch eine einzelne Datei, sondern durch:
+
+- Zusammenspiel mehrerer Integrationen
+- Laufzeitverhalten
+- implizite Betreiberentscheidungen
+- Altlasten
+- Timing- oder Recorder-Effekte
+
+Deshalb müssen immer getrennt werden:
+
+- **Fakten**
+- **abgeleitete Schlussfolgerungen**
+- **verbleibende Unsicherheiten**
+
+### 2.4 Operator Intent aktiv ergänzen
+
+Wenn möglich, gib zusätzlich eine Datei wie `operator_intent.md` oder `operator_intent.json` mit.
+
+Sie reduziert Restunsicherheit erheblich, insbesondere bei:
+
+- Zielarchitektur
+- gewollten Altlasten
+- kritischen Automationen
+- Naming-Regeln
+- Bereichen, die nie automatisch geändert werden dürfen
+
+### 2.5 Menschliche Freigabe zwischen den Stufen
+
+Zwischen Instanz 1 und Instanz 2 sollte immer eine kurze menschliche Prüfung stattfinden:
+
+- Ist die Analyse konsistent?
+- Fehlen wichtige Bereiche?
+- Wurde die Betriebsabsicht korrekt verstanden?
+- Soll der Fokus eher auf Verbesserung oder auf Neuaufbau liegen?
+
+---
+
+## 3. Workflow A – Bestehendes Home Assistant verbessern
 
 ## 3.1 Zielbild
 
 Dieser Workflow soll dein aktuelles Home Assistant:
 
-- besser strukturieren
-- sicherer machen
+- strukturieren
+- vereinfachen
+- absichern
 - wartbarer machen
 - performanter machen
-- logisch vereinfachen
-- gezielt refactoren
+- logisch entflechten
+- kontrolliert refactoren
 
-ohne dabei unnötig Funktionsverhalten zu zerstören.
+ohne unnötig bestehendes Verhalten zu zerstören.
 
-## 3.2 Empfohlene Rollen
+---
+
+## 3.2 Rollenmodell
 
 ### Instanz 1 – Analyse- und Aufbereitungsinstanz
 
-Diese Instanz macht:
+**Aufgabe:**
+Aus dem Export ein **belastbares Übergabepaket** für die Optimierungsinstanz machen.
+
+**Diese Instanz macht:**
 
 - Entpacken und Inventarisieren
 - Struktur- und Kontextaufbereitung
@@ -100,59 +164,97 @@ Diese Instanz macht:
 - Refactoring-Vorbereitung
 - Handoff-Paket für Instanz 2
 
-Diese Instanz macht **nicht**:
+**Diese Instanz macht nicht:**
 
 - keine endgültigen Refactorings
 - keine spekulativen Umbauten
 - keine stillen Architekturentscheidungen
+- keine unmarkierten Annahmen
 
 ### Instanz 2 – Optimierungs- und Refactoring-Instanz
 
-Diese Instanz macht:
+**Aufgabe:**
+Das bestehende System **auf Basis des Handoffs** strukturiert verbessern.
+
+**Diese Instanz macht:**
 
 - konkrete Verbesserungsvorschläge
-- Zielarchitektur innerhalb des bestehenden Systems
-- Refactoring-Pläne
-- Naming-Standardisierung
-- Helper-/Template-/Automation-Bereinigung
-- Dashboard-/Integration-/Performance-Optimierung
-- konkrete neue Dateien, Diffs oder Migrationsschritte
+- priorisierte Refactoring-Schritte
+- Naming- und Strukturstandardisierung
+- Dashboard-/Automation-/Template-/Helper-Bereinigung
+- Integrations- und Legacy-Bereinigung
+- Security- und Performance-Härtung
+- konkrete YAML-/JSON-/Diff-Vorschläge, wenn sinnvoll
+
+**Diese Instanz macht nicht:**
+
+- keine komplett neue Greenfield-Architektur ohne Auftrag
+- keine impliziten Betriebsentscheidungen
+- keine stillschweigende Entfernung potenziell kritischer Logik
 
 ---
 
-## 3.3 Empfohlene Reihenfolge
+## 3.3 Empfohlener Ablauf
 
-1. aktuellen Export hochladen
-2. Instanz 1 mit Analyse-/Aufbereitungs-Prompt arbeiten lassen
-3. Ergebnis von Instanz 1 prüfen
-4. strukturierte Ausgabe von Instanz 1 an Instanz 2 übergeben
-5. Instanz 2 konkrete Verbesserungen und Refactorings erstellen lassen
-6. Änderungen selektiv umsetzen
+1. aktuellen Export erzeugen
+2. Export an Instanz 1 geben
+3. strukturiertes Handoff prüfen
+4. Handoff an Instanz 2 geben
+5. Änderungen priorisieren lassen
+6. selektiv umsetzen
 7. neuen Export erzeugen
-8. optional nochmals von Instanz 1/2 gegenprüfen lassen
+8. optional Gegenprüfung mit Instanz 1 oder Instanz 2
 
 ---
 
-## 3.4 Prompt für Instanz 1 – Analyse und Aufbereitung
+## 3.4 Erwartete Ausgabe von Instanz 1
+
+Instanz 1 sollte mindestens folgende Artefakte liefern:
+
+- `executive_summary.md`
+- `current_architecture.md`
+- `integrations_inventory.json`
+- `devices_inventory.json`
+- `entities_inventory.json`
+- `automations_inventory.json`
+- `dashboards_inventory.json`
+- `custom_components_inventory.json`
+- `relationship_overview.json`
+- `security_risks.md`
+- `performance_risks.md`
+- `maintainability_issues.md`
+- `technical_debt_register.json`
+- `quick_wins.json`
+- `high_impact_changes.json`
+- `risky_changes_requiring_care.json`
+- `optimizer_task_list.json`
+- `optimizer_constraints.json`
+- `handoff_for_optimizer.md`
+
+**Wichtigstes Artefakt:**
+
+- `handoff_for_optimizer.md`
+
+---
+
+## 3.5 Prompt für Instanz 1 – Analyse und Aufbereitung
 
 ```text
-Du bist ein spezialisierter Home-Assistant-Analyse- und Aufbereitungsagent.
+Du bist eine spezialisierte Home-Assistant-Analyse- und Aufbereitungsinstanz.
 
-Ich gebe dir ein vom ChatGPT HA Exporter erzeugtes Export-Archiv. Deine Aufgabe ist NICHT, sofort Änderungen oder Refactorings vorzunehmen. Deine Aufgabe ist es, die Daten maximal sauber, vollständig, präzise, konsistent und für eine nachgelagerte andere ChatGPT-Instanz optimal nutzbar aufzubereiten.
+Ich gebe dir ein vom ChatGPT HA Exporter erzeugtes Export-Archiv. Deine Aufgabe ist NICHT, sofort Änderungen oder Refactorings vorzunehmen. Deine Aufgabe ist es, die Daten maximal sauber, konsistent, präzise und für eine zweite ChatGPT-Instanz optimal nutzbar aufzubereiten.
 
-Ziel:
-Erstelle aus dem gelieferten Export ein belastbares Analyse- und Übergabepaket, damit eine zweite ChatGPT-Instanz darauf aufbauend umfassende Verbesserungen, Optimierungen, Erweiterungen, Fehlerbehebungen, Sicherheitsverbesserungen und vollständige Refactorings an meinem bestehenden Home-Assistant-Setup durchführen kann.
-
-Arbeite streng evidenzbasiert:
-- Fakten
-- Schlussfolgerungen
-- Unsicherheiten
-klar trennen.
+Arbeitsprinzip:
+- Arbeite streng evidenzbasiert.
+- Trenne klar zwischen Fakten, Schlussfolgerungen und Unsicherheiten.
+- Erfinde nichts.
+- Markiere Datenlücken explizit.
+- Verändere keine Semantik.
 
 Pflichtaufgaben:
-- Exportarchiv vollständig analysieren
-- Dateistruktur und Exportumfang erfassen
-- Integrationen, Add-ons, Geräte, Entitäten, Areas, Labels, Floors, Automationen, Skripte, Szenen, Templates, Helper, Dashboards, Blueprints, Custom Components, Services und Runtime-Hinweise inventarisieren
+- Exportarchiv vollständig erfassen
+- Dateistruktur und Exportumfang dokumentieren
+- Integrationen, Add-ons, Geräte, Entitäten, Areas, Config Entries, Automationen, Skripte, Szenen, Templates, Helper, Dashboards, Blueprints, Custom Components, Services und Runtime-Hinweise inventarisieren
 - Inkonsistenzen, Duplikate, tote Konfiguration, Legacy-Reste, Naming-Probleme, Sicherheits-, Performance- und Wartbarkeitsrisiken benennen
 - Relationships zwischen Dateien, Entitäten, Geräten, Areas, Config Entries und Automationen erhalten
 - ein maximales Handoff-Paket für eine zweite Instanz erzeugen
@@ -179,12 +281,11 @@ Erzeuge mindestens:
 - handoff_for_optimizer.md
 
 Wichtig:
-- nichts erfinden
-- keine stillen Annahmen
-- keine voreiligen Refactorings
-- keine Semantik verändern
+- keine Refactorings durchführen
+- keine stillen Architekturentscheidungen
+- keine Halluzinationen
 - Unsicherheit explizit markieren
-- Ausgabe so aufbereiten, dass eine zweite ChatGPT-Instanz ohne Nachfragen direkt weiterarbeiten kann
+- Ausgabe so strukturieren, dass eine zweite ChatGPT-Instanz ohne Rückfragen direkt weiterarbeiten kann
 
 Die wichtigste Ausgabedatei ist:
 - handoff_for_optimizer.md
@@ -192,7 +293,7 @@ Die wichtigste Ausgabedatei ist:
 
 ---
 
-## 3.5 Prompt für Instanz 2 – Verbesserung und Refactoring des bestehenden Systems
+## 3.6 Prompt für Instanz 2 – Verbesserung und Refactoring des bestehenden Systems
 
 ```text
 Du bist eine Home-Assistant-Optimierungs- und Refactoring-Instanz.
@@ -200,7 +301,7 @@ Du bist eine Home-Assistant-Optimierungs- und Refactoring-Instanz.
 Ich gebe dir ein bereits aufbereitetes Analyse- und Übergabepaket zu meinem bestehenden Home-Assistant-System. Nutze dieses Paket als primäre Arbeitsgrundlage.
 
 Dein Ziel:
-Mein bestehendes Home Assistant umfassend verbessern, optimieren, vereinfachen, absichern, erweitern und strukturell refactoren – aber kontrolliert, evidenzbasiert und nachvollziehbar.
+Mein bestehendes Home Assistant evidenzbasiert verbessern, optimieren, vereinfachen, absichern, erweitern und strukturell refactoren – aber kontrolliert, nachvollziehbar und priorisiert.
 
 Arbeitsregeln:
 - Nutze das Handoff-Paket und die strukturierten Inventare als Hauptquelle.
@@ -210,7 +311,7 @@ Arbeitsregeln:
   - Änderungen mit Abhängigkeiten
   - riskante Änderungen
   - Änderungen, die Betreiberentscheidung erfordern
-- Gib keine generischen Ratschläge, sondern systembezogene, konkrete Maßnahmen.
+- Gib keine generischen Ratschläge, sondern systembezogene Maßnahmen.
 - Respektiere bestehendes Verhalten, sofern nicht klar belegt ist, dass es fehlerhaft, redundant oder veraltet ist.
 
 Pflichtaufgaben:
@@ -250,9 +351,11 @@ Wichtig:
 
 ---
 
-## 4. Workflow B – Home Assistant von Grund auf neu aufbauen, ohne Altlasten
+## 4. Workflow B – Home Assistant komplett neu aufbauen
 
-Dieser Workflow ist für den Fall gedacht, dass du **nicht** das bestehende Setup „sauberer machen“, sondern **ein neues, sauberes Zielsystem** erzeugen willst.
+## 4.1 Zielbild
+
+Dieser Workflow ist für den Fall gedacht, dass du **nicht** das bestehende Setup bereinigen, sondern ein **neues Zielsystem** entwerfen willst.
 
 Dabei ist das aktuelle Home Assistant nur noch:
 
@@ -263,11 +366,11 @@ Dabei ist das aktuelle Home Assistant nur noch:
 - Prioritätenquelle
 - Risikoquelle
 
-aber **nicht mehr** die Strukturvorlage.
+Es ist **nicht** mehr die Strukturvorlage.
 
-Das ist wichtig.
+Die zentrale Regel lautet:
 
-> Der Neuaufbau-Workflow soll das bestehende Setup **nicht spiegeln**, sondern aus dem Ist-System nur extrahieren:
+> Der Greenfield-Workflow soll das bestehende Setup **nicht spiegeln**, sondern aus dem Ist-System nur extrahieren:
 >
 > - was das System können muss
 > - welche Geräte und Domänen es gibt
@@ -277,128 +380,133 @@ Das ist wichtig.
 
 ---
 
-## 4.1 Zielbild des Neuaufbaus
-
-Instanz 2 soll am Ende ein Home-Assistant-Zielsystem entwerfen, das:
-
-- logisch sauber gegliedert ist
-- konsequente Benennung nutzt
-- klare Domänengrenzen hat
-- Altlasten nicht mitschleppt
-- nur notwendige Integrationen übernimmt
-- klare Helper-/Template-/Automation-Standards hat
-- für spätere Wartung und Erweiterung optimiert ist
-
----
-
-## 4.2 Die zentrale Regel für den Neuaufbau
-
-Der größte Fehler bei einem Neuaufbau ist:
-
-> Das alte System 1:1 sauberer nachzubauen.
-
-Das willst du hier ausdrücklich **nicht**.
-
-Stattdessen:
-
-- Altbestand analysieren
-- Anforderungen extrahieren
-- Zielprinzipien definieren
-- neues System **von Grund auf** designen
-
----
-
-## 4.3 Empfohlene Rollen
+## 4.2 Rollenmodell
 
 ### Instanz 1 – Requirements- und Blueprint-Instanz
 
-Diese Instanz extrahiert aus dem alten Export:
+**Aufgabe:**
+Aus dem Export die **fachlichen Anforderungen** herauslösen und vom Altbestand trennen.
 
-- fachliche Anforderungen
-- Geräteklassen und Rollen
-- Pflichtfunktionen
-- kritische Automationen
-- Betriebsregeln
-- Sicherheitsanforderungen
-- UI-/Dashboard-Anforderungen
-- Namens- und Strukturprobleme im Altbestand
-- Liste der Dinge, die NICHT übernommen werden sollen
+**Diese Instanz macht:**
 
-Am Ende liefert sie **kein Refactoring des Altbestands**, sondern:
+- Geräte- und Domäneninventar
+- Extraktion funktionaler Anforderungen
+- Identifikation kritischer Betriebsregeln
+- Trennung von Muss-Logik und Altlast
+- Definition von Zielprinzipien
+- Definition von Naming-, Struktur- und Architekturregeln
+- Übergabepaket für den Neuaufbau
 
-- Zielprinzipien
-- Anforderungskatalog
-- Architekturleitplanken
-- Blueprint für den Neuaufbau
+**Diese Instanz macht nicht:**
+
+- keinen direkten Umbau des Altbestands
+- keine automatische Übernahme historischer Struktur
+- keine stillschweigende Wiederverwendung alter Workarounds
 
 ### Instanz 2 – Greenfield-Architektur- und Build-Instanz
 
-Diese Instanz nimmt den Blueprint und erzeugt daraus:
+**Aufgabe:**
+Aus Requirements und Zielprinzipien ein **sauberes neues Home-Assistant-Zielsystem** entwerfen.
 
-- eine saubere Zielarchitektur
-- neue Namenskonventionen
-- neue Paket-/Dateistruktur
-- neue Helper-/Template-/Automation-Architektur
-- neue Dashboard-Struktur
-- Integrationskonzept
-- Migrationspfade vom Alt- ins Neusystem
+**Diese Instanz macht:**
+
+- Zielarchitektur
+- Namensstandard
+- Domänenschnitt
+- Helper-Strategie
+- Template-Strategie
+- Automationsstruktur
+- Dashboard-Konzept
+- Migrationsreihenfolge aus dem Altbestand
+
+**Diese Instanz macht nicht:**
+
+- keine blinde Übernahme alter Dateistrukturen
+- keine direkte Spiegelung historischer Automationen
+- keine automatische Übernahme unklarer Integrationen ohne Begründung
 
 ---
 
-## 4.4 Empfohlene Reihenfolge
+## 4.3 Empfohlener Ablauf
 
 1. aktuellen Export erzeugen
-2. optional `operator_intent.md` ergänzen
-3. Instanz 1 extrahiert Anforderungen und Zielprinzipien
-4. Ergebnis kurz menschlich prüfen
-5. Instanz 2 entwirft das komplette Zielsystem neu
-6. Instanz 2 erstellt Migrationsstrategie vom Alt- ins Zielsystem
-7. neues System schrittweise oder parallel aufbauen
+2. Export an Instanz 1 geben
+3. fachliche Zielanforderungen und Zielprinzipien extrahieren lassen
+4. Ergebnis menschlich prüfen
+5. Ergebnis an Instanz 2 geben
+6. Greenfield-Zielsystem entwerfen lassen
+7. Migrationsreihenfolge definieren
+8. neue Struktur schrittweise umsetzen
+
+---
+
+## 4.4 Erwartete Ausgabe von Instanz 1
+
+Instanz 1 sollte mindestens liefern:
+
+- `system_requirements.md`
+- `device_capability_inventory.json`
+- `domain_logic_inventory.json`
+- `critical_behaviors.md`
+- `legacy_to_drop.md`
+- `constraints_and_rules.md`
+- `target_principles.md`
+- `naming_principles.md`
+- `must_keep_features.json`
+- `greenfield_handoff.md`
+
+**Wichtigstes Artefakt:**
+
+- `greenfield_handoff.md`
 
 ---
 
 ## 4.5 Prompt für Instanz 1 – Requirements-Extraktion und Blueprint
 
 ```text
-Du bist eine Home-Assistant-Requirements- und Blueprint-Instanz für einen Greenfield-Neuaufbau.
+Du bist eine Requirements- und Blueprint-Instanz für Home Assistant.
 
-Ich gebe dir ein Export-Archiv meines bestehenden Home-Assistant-Systems. Deine Aufgabe ist NICHT, das bestehende Setup zu refactoren oder sauberer nachzubauen. Deine Aufgabe ist es, aus dem Altbestand nur die fachlich relevanten Anforderungen, Regeln, Geräteklassen, Muss-Funktionen, Prioritäten, Risiken und Zielprinzipien zu extrahieren.
+Ich gebe dir ein Export-Archiv meines aktuellen Home-Assistant-Systems. Deine Aufgabe ist NICHT, das bestehende Setup zu verbessern oder zu refactoren. Deine Aufgabe ist es, aus dem Altbestand die fachlichen Anforderungen, kritischen Betriebsregeln, Muss-Funktionen, Geräteklassen, Domänenlogik und Zielprinzipien zu extrahieren.
 
 Ziel:
-Erzeuge einen präzisen Blueprint für ein komplett neues Home-Assistant-System ohne Altlasten. Das alte System dient nur als Beleg- und Anforderungsquelle, nicht als Strukturvorlage.
+Erzeuge ein belastbares Requirements- und Handoff-Paket für eine zweite ChatGPT-Instanz, die mein Home Assistant von Grund auf neu und ohne Altlasten entwerfen soll.
 
 Arbeitsregeln:
-- Extrahiere Anforderungen, nicht Altstruktur.
-- Übernimm Altlasten nicht stillschweigend.
-- Trenne streng zwischen:
-  - Muss-Anforderungen
-  - Soll-Anforderungen
-  - Kann-Anforderungen
-  - Legacy, das bewusst nicht übernommen werden sollte
-- Identifiziere kritische Geräte, kritische Automationen, Sicherheitszonen, UI-Hauptpfade und betriebliche Muss-Funktionen.
-- Leite Zielprinzipien für ein neues sauberes System ab.
+- Nutze den Altbestand als Quellmaterial, nicht als Strukturvorlage.
+- Trenne strikt zwischen:
+  - was fachlich benötigt wird
+  - was historisch gewachsen ist
+  - was vermutlich Altlast ist
+  - was unklar bleibt
+- Erfinde nichts.
+- Markiere Unsicherheiten und fehlende Betreiber-Entscheidungen explizit.
 
-Liefere mindestens:
+Pflichtaufgaben:
+- Geräte, Integrationen und Domänenlogik inventarisieren
+- kritische Funktionen identifizieren
+- betriebsrelevante Regeln und Nicht-Ausfall-Funktionen ableiten
+- Naming- und Strukturprobleme des Altbestands benennen
+- klar markieren, welche Altlasten nicht automatisch übernommen werden sollten
+- Zielprinzipien für ein Greenfield-System formulieren
+- ein Handoff für die Greenfield-Aufbauinstanz erzeugen
+
+Erzeuge mindestens:
 - system_requirements.md
-- functional_requirements.md
-- non_functional_requirements.md
+- device_capability_inventory.json
+- domain_logic_inventory.json
 - critical_behaviors.md
-- critical_automations.md
-- device_classes_and_roles.json
-- integration_requirements.json
-- dashboard_requirements.md
-- naming_and_structure_principles.md
-- do_not_carry_over.md
-- greenfield_architecture_principles.md
-- migration_constraints.md
-- handoff_for_greenfield_builder.md
+- legacy_to_drop.md
+- constraints_and_rules.md
+- target_principles.md
+- naming_principles.md
+- must_keep_features.json
+- greenfield_handoff.md
 
 Wichtig:
-- keine direkte Refactoring-Lösung des Altbestands
-- keine 1:1-Übernahme der aktuellen Struktur
-- nichts erfinden
-- Unsicherheiten explizit markieren
-- deutlich benennen, welche Altbestandsteile nur historisch gewachsen sind und nicht Zielbild sein sollten
+- kein Refactoring des Altbestands
+- keine blinde Übernahme der alten Struktur
+- keine Halluzinationen
+- Unsicherheit explizit markieren
 ```
 
 ---
@@ -406,158 +514,147 @@ Wichtig:
 ## 4.6 Prompt für Instanz 2 – Greenfield-Neuaufbau von Grund auf
 
 ```text
-Du bist eine Home-Assistant-Greenfield-Architektur- und Build-Instanz.
+Du bist eine Greenfield-Architektur- und Build-Instanz für Home Assistant.
 
-Ich gebe dir ein aufbereitetes Requirements- und Blueprint-Paket, das aus meinem bestehenden Home-Assistant-System abgeleitet wurde. Deine Aufgabe ist es, daraus ein komplett neues, sauberes Home-Assistant-Zielsystem von Grund auf zu entwerfen – ohne Altlasten, ohne historisch gewachsene Strukturfehler und ohne blinde 1:1-Übernahme des alten Systems.
+Ich gebe dir ein bereits aufbereitetes Requirements- und Handoff-Paket, das aus meinem bestehenden Home-Assistant-System extrahiert wurde. Nutze dieses Paket als primäre Grundlage.
 
-Ziel:
-Entwirf ein neues Home Assistant, das dieselben fachlichen Kernfunktionen zuverlässig abdecken kann, aber strukturell, semantisch und architektonisch deutlich sauberer ist.
+Dein Ziel:
+Entwirf ein neues, sauberes Home-Assistant-Zielsystem von Grund auf – ohne Altlasten, ohne blind übernommene historische Struktur und mit klaren Architektur-, Naming- und Wartbarkeitsprinzipien.
 
-Grundprinzipien:
-- Das alte System ist nur Anforderungsquelle, nicht Vorlage.
-- Übernimm nur das, was fachlich notwendig ist.
-- Entferne Legacy, Duplikate, Workarounds und historisch gewachsene Inkonsistenz.
-- Definiere eine klare Zielarchitektur.
-- Erzeuge eine Struktur, die langfristig wartbar, erweiterbar und nachvollziehbar ist.
+Arbeitsregeln:
+- Nutze den Altbestand nur indirekt über das Handoff.
+- Übernimm nichts unkritisch nur deshalb, weil es im alten System existierte.
+- Trenne klar zwischen:
+  - Muss-Funktionen
+  - optionale Verbesserungen
+  - spätere Erweiterungen
+  - Betreiberentscheidungen
+- Plane so, dass das neue System logisch, modular, verständlich und wartbar ist.
 
 Pflichtaufgaben:
 - Zielarchitektur definieren
-- empfohlene Verzeichnis- und Paketstruktur definieren
-- Namensstandard definieren
+- Namensschema definieren
+- Domänengruppen und Verantwortlichkeiten definieren
+- Helper-/Template-/Automation-Strategie definieren
+- Dashboard-Strategie definieren
 - Integrationsstrategie definieren
-- Helper-/Template-/Automation-/Script-Strategie definieren
-- Dashboard-/UI-Strategie definieren
-- Sicherheits- und Exposure-Modell definieren
-- Logging-, Recorder- und Wartbarkeitsstrategie definieren
-- Migrationspfad vom Altbestand zum Zielsystem definieren
+- Migration aus dem Altbestand planen
+- eine priorisierte Umsetzungsreihenfolge liefern
 
 Liefere mindestens:
 - target_architecture.md
-- directory_layout.md
 - naming_standard.md
-- integration_strategy.md
+- directory_structure.md
 - helper_strategy.md
 - template_strategy.md
 - automation_architecture.md
 - dashboard_architecture.md
-- security_model.md
-- recorder_and_logging_strategy.md
+- integration_strategy.md
 - migration_plan.md
-- staged_rebuild_plan.md
-- implementation_roadmap.json
+- phased_build_plan.md
+- implementation_backlog.json
 
 Zusätzlich:
-- Wenn möglich, liefere konkrete Startdateien, Paketvorschläge, Beispielstrukturen, Vorlagen und Namensschemata.
-- Markiere klar, was direkt umsetzbar ist und was Betreiberentscheidung braucht.
-- Gib keine Altlasten ungeprüft wieder aus.
+- Begründe jede strukturelle Entscheidung
+- Kennzeichne riskante oder betreiberabhängige Entscheidungen
+- Liefere, wenn sinnvoll, konkrete Datei- und YAML-Vorschläge
 
 Wichtig:
-- baue neu, nicht nur sauberer alt
-- nichts erfinden
-- Unsicherheit markieren
-- keine versteckten Annahmen
+- keine Spiegelung des Altbestands ohne Begründung
+- keine Halluzinationen
+- keine stillen Annahmen
 ```
 
 ---
 
-## 5. Empfohlene Zusatzdatei: operator_intent.md
+## 5. Empfohlene Zusatzdatei – `operator_intent.md`
 
-Für beide Workflows ist eine zusätzliche Datei extrem hilfreich:
-
-- `operator_intent.md`
-- oder `operator_intent.json`
+Wenn du willst, dass beide Instanzen weniger raten müssen, gib zusätzlich eine Datei wie `operator_intent.md` oder `operator_intent.json` mit.
 
 Empfohlene Inhalte:
 
-- Zielarchitektur-Wunsch
-- gewünschte Sprache der Benennung (deutsch, englisch, hybrid)
-- kritische Automationen
-- sicherheitskritische Geräte/Funktionen
-- Bereiche, die nie automatisch geändert werden dürfen
-- bevorzugte Integrationen oder Add-ons
-- Bereiche, die bewusst alt bleiben dürfen
-- Bereiche, die ausdrücklich komplett neu gedacht werden sollen
+### Zielbild
 
-Beispielstruktur:
+- Was soll das System langfristig sein?
+- Eher pragmatisch erweitert oder eher grundlegend neu strukturiert?
 
-```md
-# Operator Intent
+### Kritische Funktionen
 
-## Zielbild
-- möglichst modulare Struktur
-- klare englische Benennung
-- wenig Legacy
-- Dashboards nach Räumen und Aufgaben getrennt
+- Welche Automationen oder Geräte dürfen auf keinen Fall ausfallen?
+- Welche Bereiche sind geschäfts- oder alltagskritisch?
 
-## Kritische Funktionen
-- Alarmanlage
-- Heizungssteuerung
-- Gewächshaus / Zelt
-- Backup-Überwachung
+### Nicht automatisch ändern
 
-## Nicht automatisch ändern
-- Sicherheitsautomationen
-- Exposed Entities für Sprachassistenten
+- Welche Teile dürfen nie ohne Rückfrage verändert werden?
+- Gibt es Systeme mit Sicherheits-, Komfort- oder Familienrelevanz?
 
-## Darf neu aufgebaut werden
-- Dashboards
-- Naming
-- Helper-Struktur
-- Automationsorganisation
-```
+### Darf neu aufgebaut werden
+
+- Welche Altlasten dürfen entfernt, ersetzt oder neu modelliert werden?
+
+### Naming und Sprache
+
+- Deutsch, Englisch oder Hybrid?
+- Welche Namensprinzipien sind gewünscht?
+
+### Betriebsregeln
+
+- Was hat Vorrang: Stabilität, Klarheit, Performance, Datenschutz, Erweiterbarkeit?
 
 ---
 
-## 6. Welche Artefakte du an welche Instanz gibst
+## 6. Welche Artefakte an welche Instanz geben?
 
 ## 6.1 Für Instanz 1
 
-Immer mitgeben:
+Immer sinnvoll:
 
-- das originale Export-Archiv (`.tar.gz`)
-- optional `operator_intent.md`
+- Exportarchiv
+- optional `operator_intent.md` / `operator_intent.json`
+- ggf. zusätzliche manuelle Hinweise des Betreibers
 
 ## 6.2 Für Instanz 2 im Verbesserungsworkflow
 
-Mitgeben:
+Nicht erneut den Roh-Export priorisieren, sondern zuerst:
 
-- die aufbereitete Ausgabe von Instanz 1
-- insbesondere:
-  - `handoff_for_optimizer.md`
-  - Inventare
-  - Risikoberichte
-  - Refactoring-Ziele
-  - Prioritätslisten
+- `handoff_for_optimizer.md`
+- Inventare
+- Risiko- und Debt-Dateien
+- priorisierte Task-Listen
+- Betreiberhinweise
+
+Roh-Export nur ergänzend nutzen.
 
 ## 6.3 Für Instanz 2 im Greenfield-Workflow
 
-Mitgeben:
+Nicht den Altbestand als Hauptgrundlage verwenden, sondern:
 
-- die aufbereitete Ausgabe von Instanz 1
-- insbesondere:
-  - `handoff_for_greenfield_builder.md`
-  - Requirements-Dateien
-  - Zielprinzipien
-  - `do_not_carry_over.md`
-  - Migrationsgrenzen
+- `greenfield_handoff.md`
+- Requirements-Dateien
+- Zielprinzipien
+- Constraints
+- `operator_intent.md` / `operator_intent.json`
+
+Der Roh-Export dient nur als Rückversicherung.
 
 ---
 
-## 7. Empfohlene Qualitätsprüfung nach jeder Stufe
+## 7. Qualitätsprüfung nach jeder Stufe
 
 Nach Instanz 1 prüfen:
 
-- wurden Fakten und Schlussfolgerungen sauber getrennt?
-- fehlen offensichtliche Kernbereiche?
-- wurden kritische Automationen erkannt?
-- wurden Unsicherheiten explizit gemacht?
+- Wurden Fakten und Unsicherheiten sauber getrennt?
+- Fehlen kritische Integrationen oder Geräte?
+- Ist der Ist-Zustand korrekt verstanden?
+- Ist das Handoff ohne Rückfragen nutzbar?
 
 Nach Instanz 2 prüfen:
 
-- sind die Vorschläge systembezogen statt generisch?
-- ist die Priorisierung plausibel?
-- wurden riskante Änderungen korrekt markiert?
-- wurde im Greenfield-Fall wirklich neu gedacht statt Altstruktur zu spiegeln?
+- Sind Änderungen priorisiert?
+- Sind Risiken markiert?
+- Sind Betreiberentscheidungen klar getrennt?
+- Ist die Zielstruktur nachvollziehbar?
+- Wird Altlast nicht unkritisch mitgeschleppt?
 
 ---
 
@@ -565,56 +662,67 @@ Nach Instanz 2 prüfen:
 
 ### Beim Verbesserungsworkflow
 
-- dieselbe Instanz analysiert und ändert gleichzeitig alles
-- rohe Exportdaten werden sofort refactoriert
-- Betreiberabsicht wird nicht mitgegeben
-- riskante Änderungen werden nicht isoliert
+- dieselbe Instanz analysiert und refactort alles selbst
+- Rohdaten werden sofort umgebaut
+- Runtime- und Unsicherheitskontext wird ignoriert
+- unklare Altlasten werden als Bugs fehlgedeutet
+- Security-/Performance-Themen werden aus reiner YAML-Sicht beurteilt
 
 ### Beim Greenfield-Workflow
 
-- das alte Setup wird einfach hübscher nachgebaut
-- alte Namensfehler werden übernommen
-- Legacy-Helper und Workarounds werden reproduziert
-- Zielarchitektur wird nicht explizit definiert
-- Migration wird nicht geplant
+- das neue System spiegelt nur die alte Struktur in „schöner“
+- Workarounds werden übernommen, ohne ihre Ursache zu prüfen
+- Naming-Chaos wird mitmigriert
+- unkritische Integrationen werden nur aus Gewohnheit übernommen
+- Altlogik wird nicht in Muss-Funktion vs Altlast getrennt
 
 ---
 
-## 9. Minimalempfehlung, wenn du nur wenig Aufwand willst
-
-Wenn du nicht viel Zeit investieren willst, nimm mindestens diesen Ablauf:
+## 9. Minimalempfehlung, wenn du wenig Aufwand willst
 
 ### Für Verbesserungen
 
-1. Export erzeugen
-2. Instanz 1 mit Analyse-/Aufbereitungs-Prompt
-3. Instanz 2 mit Optimierungs-/Refactoring-Prompt
+- Export erzeugen
+- Instanz 1 Analyse machen lassen
+- Handoff an Instanz 2 geben
+- nur sichere Änderungen zuerst umsetzen
 
 ### Für kompletten Neuaufbau
 
-1. Export erzeugen
-2. optional `operator_intent.md` ergänzen
-3. Instanz 1 mit Requirements-/Blueprint-Prompt
-4. Instanz 2 mit Greenfield-Build-Prompt
+- Export erzeugen
+- Instanz 1 Requirements extrahieren lassen
+- Instanz 2 Greenfield-Architektur erstellen lassen
+- neue Struktur schrittweise aufbauen
 
 ---
 
-## 10. Empfehlung des Projekts
+## 10. Projekt-Empfehlung
 
-Die stärkste Standardempfehlung ist:
+### Für bestehendes Home Assistant
 
-### Für bestehendes HA
+Die empfohlene Standardvorgehensweise dieses Projekts ist:
 
 **Zwei Instanzen**
 
-- Analyse/Aufbereitung
-- Optimierung/Refactoring
+1. Analyse und Handoff
+2. Optimierung und Refactoring
 
 ### Für kompletten Neuanfang ohne Altlasten
 
+Die empfohlene Standardvorgehensweise dieses Projekts ist:
+
 **Zwei Instanzen**
 
-- Requirements/Blueprint aus dem Altbestand
-- Greenfield-Neuaufbau aus dem Blueprint
+1. Requirements-Extraktion aus dem Altbestand
+2. Greenfield-Neuaufbau auf Basis dieser Requirements
 
-Genau diese Trennung reduziert Halluzinationen, unnötige Altlastübernahme und unkontrollierte Architekturentscheidungen am stärksten.
+---
+
+## 11. Verhältnis zu den anderen Dokumenten
+
+- `README.md` erklärt, **was** die App ist und wie sie installiert/verwendet wird.
+- `DOCS.md` erklärt, **wie** der Exporter technisch arbeitet.
+- `EXPORT_SCHEMA.md` beschreibt, **wie der Export aufgebaut ist**.
+- `CHATGPT_WORKFLOWS.md` beschreibt, **wie du mit dem Export praktisch mit ChatGPT arbeitest**.
+
+Wenn du Prompts oder Instanz-Übergaben baust, ist diese Datei der richtige Startpunkt.
