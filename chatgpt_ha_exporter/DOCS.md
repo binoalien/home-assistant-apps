@@ -1,505 +1,290 @@
 # ChatGPT HA Exporter – Technical Documentation
 
-The ChatGPT HA Exporter generates a sanitised analytics package from Home Assistant.
+## 1. Overview
 
-This documentation describes:
+The ChatGPT HA Exporter creates a **sanitised analysis package** from Home Assistant.
 
-- Architecture and export pipeline
-- Data ranges included
-- Sanitisation strategy
-- Configuration model
-- Limitations and troubleshooting
+It is designed for:
+- ChatGPT-based inspection
+- safer hand-off of Home Assistant structure
+- evidence-based optimisation planning
+- refactoring preparation
 
-For a formal, machine-readable description of the export structure, see:
+It is **not** a backup or restore tool.
 
-👉 **`EXPORT_SCHEMA.md`**
-
-This file serves as a **schema / API contract for ChatGPT and other analytics instances**.
+For the formal export contract, see **`EXPORT_SCHEMA.md`**.  
+For operational ChatGPT usage and prompts, see **`CHATGPT_WORKFLOWS.md`**.
 
 ---
 
 ## 2. Core Principles
 
-### Analysis > Backup
+### 2.1 Analysis over Backup
 
-Focus:
-
+Prioritised:
 - structure
-- relationships
-- runtime context
-- diagnostics
+- inventories
+- key runtime context
+- sanitised source material
 
-Not focus:
+Not prioritised:
+- full restore fidelity
+- raw one-to-one replication of all internals
 
-- full raw replication
-- restore fidelity
+### 2.2 Sanitisation with Structural Retention
 
----
+The exporter removes or redacts sensitive values while trying to preserve:
+- analyzable YAML structure
+- entity/device/area/config-entry context where exported
+- service and integration visibility
+- configuration reasoning value
 
-### Structure-Preserving Sanitization
+### 2.3 Share-Based Output
 
-- secrets and sensitive values are redacted
-- references remain intact
-- relationships stay analyzable
-
-Preserved:
-
-- entity relationships
-- device mappings
-- config entry links
-- domains, slugs, versions
-
----
-
-### Single Output Artifact
-
-- one `.tar.gz`
-- stored in `/share`
-- no leftover working directory
+The current exporter writes:
+- an extracted export directory under `/share`
+- a matching `.tar.gz` archive next to it
 
 ---
 
 ## 3. Export Pipeline
 
-### 3.1 Source Collection
+### 3.1 Config Sources
 
-From Home Assistant config:
+The exporter may collect:
+- `configuration.yaml`
+- `automations.yaml`
+- `scripts.yaml`
+- `scenes.yaml`
+- `ui-lovelace.yaml`
+- `customize*.yaml`
+- `groups.yaml`
+- YAML files from `packages/`, `themes/`, `dashboards/`, `blueprints/`
+- `custom_components/`
+- `python_scripts/`
+- `pyscript/`
 
-- core configuration
-- dashboards
-- blueprints
-- custom components
-- python/pyscript/appdaemon
-- ESPHome
-- themes
+### 3.2 `.storage` Sources
 
----
-
-### 3.2 Storage Extraction
-
-`.storage` data is:
-
-- exported (sanitized)
-- normalized for analysis
-
-Includes:
-
-- registries
+The exporter includes a selected allowlist of `.storage` files, including:
+- device/entity/area/floor/label registries
 - config entries
-- frontend state
-- security/auth/network
-- trace + repairs
-- helpers + templates
-- integration metadata
+- core config
+- restore state
+- Lovelace-related files
+- selected energy/person data
+
+### 3.3 Runtime/API Sources
+
+Optional runtime/API collection includes:
+- current states
+- services
+- supervisor info
+- core info
+- add-on inventory
+- API config
+- log tail
+- recorder summary
 
 ---
 
-### 3.3 Runtime + API Context
+## 4. Output Domains
 
-Optional runtime data:
+### 4.1 `source_sanitized/`
 
-- state snapshots
-- service catalog
-- supervisor/core info
-- logs (core, supervisor, add-ons)
-- backup metadata
-- add-on options + stats
+Sanitised raw source copies.
 
----
+Typical subtrees:
+- `source_sanitized/config/`
+- `source_sanitized/storage/`
+- `source_sanitized/custom_components/`
+- `source_sanitized/python_scripts/`
+- `source_sanitized/pyscript/`
 
-### 3.4 Derived Reports
+### 4.2 `normalized/`
 
-Generated artifacts:
+Normalised JSON views for downstream analysis.
 
-- relationship integrity report
-- security exposure report
-- integration profiles
-- uncertainty register
-- export manifest/report/summary
+Typical subtrees:
+- `normalized/config/`
+- `normalized/storage/`
 
----
+### 4.3 `inventory/`
 
-## 4. Export Structure
+Structured metadata and system views.
 
-### `source_sanitized/`
+Typical files:
+- `supervisor_info.json`
+- `core_info.json`
+- `addons.json`
+- `api_config.json`
+- `services.json`
+- `storage_inventory.json`
 
-Sanitized Home Assistant source:
+### 4.4 `runtime/`
 
-- config
-- dashboards
-- blueprints
-- custom_components
-- python/pyscript/appdaemon
-- esphome
-- themes
+Runtime-derived outputs.
 
----
+Typical files:
+- `state_snapshot.ndjson`
+- `home-assistant.log.tail.txt`
+- `recorder_summary.json`
+- `recorder_top_entities.ndjson`
 
-### `normalized/`
+### 4.5 `metadata/`
 
-Analysis-ready JSON views:
+Export metadata.
 
-- normalized `.storage`
-- unified structures
-
----
-
-### `inventory/`
-
-Structured system insights:
-
-- core + supervisor info
-- api config
-- storage + config inventory
-- helper/template definitions
-- integration profiles
-- security exposure
-- uncertainty register
-
----
-
-### `runtime/`
-
-Runtime context:
-
-- state snapshots
-- snapshot deltas
-- logs
-- recorder summaries + samples
-
----
-
-### `metadata/`
-
-Export metadata:
-
-- manifest
-- report
-- summary
-- checksums
-- operator intent context
+Typical files:
+- `export_manifest.json`
+- `export_summary.md`
+- `checksums.sha256`
 
 ---
 
 ## 5. Key Reports
 
-### Export Manifest
+### 5.1 `export_manifest.json`
 
-Machine-readable:
+Machine-readable manifest of the run.
 
-- file counts
-- included modules
-- export structure
-
----
-
-### Export Report
-
-Execution summary:
-
+Current responsibilities:
+- exporter identity
+- path metadata
+- options used
+- included/excluded counts
+- config/storage/API/recorder summary
 - warnings
-- enabled features
-- runtime coverage
+
+### 5.2 `export_summary.md`
+
+Human-readable summary.
+
+Use it for:
+- quick inspection
+- warning review
+- seeing what a downstream ChatGPT instance should inspect first
+
+### 5.3 `storage_inventory.json`
+
+Shows:
+- available `.storage` files
+- included `.storage` files
+
+This is important for distinguishing missing source data from intentional scope.
 
 ---
 
-### Export Summary
+## 6. Sanitisation Model
 
-Human-readable:
+### 6.1 Redacted or trimmed
 
-- quick overview
-- warnings
-- major components
-
----
-
-### Relationship Integrity
-
-Validates:
-
-- device ↔ entity
-- area ↔ device
-- config entry ↔ entity/device
-
----
-
-### Security Exposure
-
-Includes:
-
-- HTTP context
-- auth providers
-- exposed entities
-- network signals
-- mobile/assist/frontend context
-
----
-
-### Uncertainty Register
-
-Classifies gaps:
-
-- `hard_export_gap`
-- `export_scope_gap`
-- `principled_uncertainty`
-
----
-
-## 6. Sanitization Model
-
-### Redacted
-
-- secrets
+Examples:
+- passwords
 - tokens
-- webhook IDs
+- API keys
 - client secrets
-- sensitive endpoints
+- webhook values
+- internal/external URL fields
+- obvious bearer-style credentials
 
----
+### 6.2 Preserved where useful
 
-### Preserved
+Examples:
+- non-sensitive YAML structure
+- entity IDs in state snapshots
+- service inventory structure
+- config-entry and registry structures, subject to sanitisation
 
-- slugs
-- versions
-- domains
-- structure
-- relationships
+### 6.3 Text-tail processing
 
----
-
-### Pseudonymization
-
-Used when:
-
-- value must stay referencable
-- but must not leak original data
+Text files are sanitised line-wise.
+Logs are exported as a tail, not as full archives.
 
 ---
 
 ## 7. Configuration Model
 
-### Base Analysis
+### 7.1 Base scope
 
-- state snapshot
-- services
-- dashboards
-- blueprints
-- custom components
+- `include_current_state_snapshot`
+- `include_service_catalog`
+- `include_dashboards`
+- `include_blueprints`
+- `include_custom_components`
 
----
+### 7.2 Source logic
 
-### Logic Sources
+- `include_python_scripts`
+- `include_pyscript`
 
-- python_scripts
-- pyscript
-- appdaemon
-- esphome
-- themes
+### 7.3 Runtime and logs
 
----
+- `include_logs`
+- `max_log_lines`
 
-### Runtime + Logs
+### 7.4 Recorder
 
-- logs (core + supervisor + add-ons)
-- archived logs
-- snapshot sequences
+- `include_recorder_summary`
+- `recorder_days`
 
----
+### 7.5 Storage scope
 
-### Recorder
-
-- summary
-- deep export (states/events/statistics)
-- optional DB copy
+- `include_raw_storage_files`
 
 ---
 
-### Storage Coverage
+## 8. Troubleshooting
 
-- raw storage
-- extended storage
-- security storage
-- frontend storage
-- trace storage
-- backup metadata
-
----
-
-### Derived Analysis
-
-- helper definitions
-- template definitions
-- relationship integrity
-- security exposure
-- integration profiles
-- uncertainty register
-
----
-
-### Advanced Features
-
-- multi snapshots
-- operator intent template/import
-- add-on options export
-- add-on stats
-- HACS slimming
-
----
-
-## 8. Recommended Profiles
-
-### Standard
-
-Balanced:
-
-- snapshots
-- logs
-- recorder summary + deep export
-- extended + security storage
-- integration profiles
-- uncertainty register
-
----
-
-### Privacy-Focused
-
-Reduced exposure:
-
-- no recorder DB copy
-- reduced logs
-- minimal optional directories
-- operator intent externalized
-
----
-
-### Deep Analysis / Refactoring
-
-Maximum insight:
-
-- full storage coverage
-- deep recorder export
-- multi snapshots
-- add-on options export
-- integration profiles
-- operator intent provided
-
----
-
-## 9. Troubleshooting
-
-### Missing Themes
-
-Cause:
-
-- referenced but not present
-
-Check:
-
-- directory exists
-- contains YAML files
-- path is correct
-
----
-
-### Missing Logs
-
-Check:
-
-- options enabled
-- endpoint availability
-- supervisor permissions
-
----
-
-### Missing Data
+### 8.1 Missing logs
 
 Possible reasons:
+- `include_logs` disabled
+- `home-assistant.log` not present
+- read failure
 
-- not present in system
-- disabled via config
-- not accessible
-- intentionally excluded
+### 8.2 Missing dashboard or blueprint files
 
----
+Possible reasons:
+- source directory not present
+- directory empty
+- option disabled
 
-### Start on Boot
+### 8.3 Missing `.storage` data
 
-This is a **one-shot app**.
+Possible reasons:
+- source file not in allowlist
+- source file absent in Home Assistant
+- read or parse failure
 
-If still active:
+### 8.4 API warnings
 
-- disable manually in Home Assistant UI
-
----
-
-## 10. Limitations
-
-Not solvable by export alone:
-
-- architectural intent
-- naming conventions
-- critical automations
-- intentional legacy behavior
-
----
-
-## 11. Operator Intent
-
-Recommended:
-
-- `operator_intent.md`
-- `operator_intent.json`
-
-Contains:
-
-- target architecture
-- constraints
-- non-changeable areas
-- design decisions
+Supervisor/core API calls may fail because of:
+- permissions
+- unavailable endpoints
+- malformed responses
+- temporary runtime issues
 
 ---
 
-## 12. ChatGPT Usage
+## 9. Limitations
 
-See:
+This exporter does not eliminate all uncertainty.
 
-**`CHATGPT_WORKFLOWS.md`**
-
-Includes:
-
-- two-instance workflow
-- greenfield rebuild strategy
-- ready-to-use prompts
-- handover strategy
+Not fully derivable from data alone:
+- operator intent
+- desired target architecture
+- preferred naming conventions
+- intentionally retained legacy behaviour
+- critical business logic that only the operator can confirm
 
 ---
 
-## 13. Export Schema (Machine Contract)
+## 10. Recommended Use with ChatGPT
 
-The file **`EXPORT_SCHEMA.md`** describes the export structure in a formal, machine-readable format.
+Recommended sequence:
+1. create a fresh export
+2. let one ChatGPT instance analyse and structure it
+3. let a second instance optimise or refactor based on that handoff
 
-It is relevant for:
-
-- ChatGPT instances
-- Analysis pipelines
-- Validation of exports
-- Future compatibility
-
-Difference from this documentation:
-
-| File | Purpose |
-|------|------|
-| DOCS.md | Technical explanation for humans |
-| EXPORT_SCHEMA.md | Structured contract for machines |
-
-### When to use EXPORT_SCHEMA.md?
-
-- when writing analysis prompts
-- when validating an export
-- when developing further tools
-- when comparing different export versions
-
-### Important
-
-DOCS.md describes **how the export works**  
-EXPORT_SCHEMA.md describes **how the export is structured**
+For concrete two-instance workflows and prompts, see **`CHATGPT_WORKFLOWS.md`**.

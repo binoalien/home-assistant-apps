@@ -1,139 +1,40 @@
 configuration:
   export_name_prefix:
-    name: Exportnamens-Präfix
-    description: Präfix für den erzeugten Archivnamen unter /share.
+    name: Export-Namenspräfix
+    description: Präfix für das erzeugte Exportverzeichnis und Archiv.
   include_current_state_snapshot:
-    name: Aktuellen Zustands-Snapshot exportieren
-    description: Exportiert einen sanitisierten Snapshot der aktuellen Home-Assistant-States.
+    name: Aktuellen State-Snapshot exportieren
+    description: Exportiert aktuelle Zustände über die interne Home-Assistant-API.
   include_service_catalog:
     name: Service-Katalog exportieren
-    description: Exportiert den aktuell verfügbaren Home-Assistant-Service-Katalog.
+    description: Exportiert verfügbare Services gruppiert nach Domain.
   include_dashboards:
     name: Dashboards exportieren
-    description: Exportiert Lovelace-Dashboards und zugehörige Dashboard-Metadaten.
+    description: Exportiert Lovelace-YAML und relevante Dashboard-Dateien aus .storage.
   include_blueprints:
     name: Blueprints exportieren
-    description: Exportiert Home-Assistant-Blueprint-Dateien und normalisierte Metadaten.
+    description: Exportiert Dateien aus /config/blueprints.
   include_custom_components:
     name: Custom Components exportieren
-    description: Exportiert custom_components mit angewendeter Sanitization.
+    description: Exportiert Dateien aus /config/custom_components.
   include_python_scripts:
     name: python_scripts exportieren
-    description: Exportiert das Verzeichnis python_scripts, falls vorhanden.
+    description: Exportiert Dateien aus /config/python_scripts.
   include_pyscript:
     name: pyscript exportieren
-    description: Exportiert das Verzeichnis pyscript, falls vorhanden.
-  include_appdaemon:
-    name: AppDaemon exportieren
-    description: Exportiert das Verzeichnis appdaemon, falls vorhanden.
-  include_esphome:
-    name: ESPHome exportieren
-    description: Exportiert ESPHome-Quelldateien und zugehörige Metadaten, falls vorhanden.
-  include_themes:
-    name: Themes exportieren
-    description: Exportiert konfigurierte Frontend-Themes und Theme-Diagnostik.
+    description: Exportiert Dateien aus /config/pyscript, falls vorhanden.
   include_logs:
-    name: Logs exportieren
-    description: Exportiert sanitisierten Home-Assistant-Core-Loginhalt.
-  include_log_archives:
-    name: Archivierte Logs exportieren
-    description: Exportiert archivierte Home-Assistant-Logdateien, wenn vorhanden.
+    name: Log-Tail exportieren
+    description: Exportiert ein sanitisiertes Tail von home-assistant.log.
   max_log_lines:
     name: Maximale Log-Zeilen
-    description: Maximale Anzahl von Zeilen pro exportierter Logdatei.
+    description: Anzahl der Log-Zeilen, die im Export erhalten bleiben.
   include_recorder_summary:
     name: Recorder-Zusammenfassung exportieren
-    description: Exportiert eine Recorder-Zusammenfassung auf Basis der aktuellen Recorder-Datenbank.
-  include_recorder_deep_export:
-    name: Tiefen-Recorder-Export einbeziehen
-    description: Exportiert zusätzlich zu der Zusammenfassung Recorder-State-, Event- und Statistik-Samples.
-  include_recorder_db_copy:
-    name: Recorder-DB-Kopie einbeziehen
-    description: Kopiert die Home-Assistant-Recorder-SQLite-Datenbank in das Exportpaket.
+    description: Exportiert eine zusammengefasste Recorder-Analyse statt der vollständigen DB.
   recorder_days:
-    name: Recorder-Rückblick in Tagen
-    description: Anzahl der Tage, die für recorderbasierte Exporte berücksichtigt werden.
-  recorder_state_sample_limit:
-    name: Recorder-State-Sample-Limit
-    description: Maximale Anzahl exportierter Recorder-State-Zeilen.
-  recorder_event_sample_limit:
-    name: Recorder-Event-Sample-Limit
-    description: Maximale Anzahl exportierter Recorder-Event-Zeilen.
-  recorder_statistics_limit:
-    name: Recorder-Statistik-Limit
-    description: Maximale Anzahl exportierter Recorder-Statistik-Zeilen.
-  recorder_entity_history_limit:
-    name: Recorder-Entity-Historien-Limit
-    description: Maximale Anzahl von Historienzeilen pro Entität im Recorder-Tiefenexport.
+    name: Recorder-Tage
+    description: Anzahl der letzten Tage, die aus dem Recorder zusammengefasst werden.
   include_raw_storage_files:
-    name: Rohkopien der Storage-Dateien exportieren
-    description: Nimmt sanitisierte Rohkopien der exportierten .storage-Dateien auf.
-  include_extended_storage:
-    name: Erweiterten Storage exportieren
-    description: Exportiert zusätzliche .storage-Dateien über die Basis-Registries hinaus.
-  include_security_storage:
-    name: Sicherheitsrelevanten Storage exportieren
-    description: Exportiert sanitisiertes sicherheits-, auth- und exposurebezogenes .storage-Material.
-  include_backup_metadata:
-    name: Backup-Metadaten exportieren
-    description: Exportiert Backup-Metadaten und Zusammenfassungen.
-  include_frontend_storage:
-    name: Frontend-Storage exportieren
-    description: Exportiert frontend-, panel- und UI-bezogene .storage-Dateien.
-  include_trace_storage:
-    name: Trace-Storage exportieren
-    description: Exportiert Automation-Trace- und Repairs-Issue-Storage-Daten.
-  include_helper_source_definitions:
-    name: Helper-Quelldefinitionen exportieren
-    description: Exportiert Helper-Definitionen aus YAML und unterstützten Storage-Dateien.
-  include_template_source_definitions:
-    name: Template-Quelldefinitionen exportieren
-    description: Exportiert Template-Definitionen aus YAML und UI-verwalteten Config-Entries.
-  include_relationship_integrity_report:
-    name: Relationship-Integrity-Report exportieren
-    description: Erstellt einen Report zur Validierung von Geräte-, Entitäts-, Bereichs- und Config-Entry-Verknüpfungen.
-  include_supervisor_logs:
-    name: Supervisor-Logs exportieren
-    description: Exportiert den neuesten sanitisierten Supervisor-Log.
-  include_addon_logs:
-    name: Add-on-Logs exportieren
-    description: Exportiert, wenn verfügbar, die neuesten sanitisierten Logs installierter Add-ons.
-  addon_log_lines:
-    name: Add-on-Log-Zeilen
-    description: Maximale Anzahl von Zeilen pro exportiertem Add-on-Log.
-  include_multi_state_snapshots:
-    name: Mehrere State-Snapshots exportieren
-    description: Erfasst mehrere State-Snapshots über die Zeit und schreibt eine Delta-Zusammenfassung.
-  multi_state_snapshot_count:
-    name: Anzahl der State-Snapshots
-    description: Anzahl der State-Snapshots, die während des Exports aufgenommen werden.
-  multi_state_snapshot_interval_seconds:
-    name: Sekunden zwischen State-Snapshots
-    description: Anzahl der Sekunden zwischen zwei aufgenommenen State-Snapshots.
-  include_backup_deep_context:
-    name: Tiefen-Backup-Kontext exportieren
-    description: Exportiert Supervisor-Backup- und Mount-Kontext für Restore-Analysen.
-  include_operator_intent_template:
-    name: Operator-Intent-Vorlage einbeziehen
-    description: Fügt eine Vorlagendatei hinzu, mit der Betreiber-Intention für spätere Analysen dokumentiert werden kann.
-  include_operator_intent_import:
-    name: Operator-Intent-Import einbeziehen
-    description: Importiert vorhandene operator_intent-Dateien aus Home-Assistant-Konfiguration oder share.
-  include_security_exposure_report:
-    name: Security-/Exposure-Report einbeziehen
-    description: Erstellt einen strukturierten Sicherheits- und Exposure-Report aus YAML-, Storage- und API-Daten.
-  include_addon_options_export:
-    name: Add-on-Options-Export einbeziehen
-    description: Exportiert sanitisierte Add-on-Options- und Schema-Profile über die Supervisor-API.
-  include_integration_profiles:
-    name: Integrationsprofile einbeziehen
-    description: Erstellt fokussierte Profile für kritische Integrationen wie ESPHome, MQTT, Broadlink und HACS.
-  include_uncertainty_register:
-    name: Unsicherheitsregister einbeziehen
-    description: Erstellt ein maschinenlesbares Register zu Exportlücken und verbleibender Unsicherheit.
-  include_addon_stats:
-    name: Add-on-Statistiken einbeziehen
-    description: Fragt Add-on-Stats-Endpunkte ab und exportiert unterstützte Ergebnisse.
-  slim_hacs_assets:
-    name: HACS-Assets verschlanken
-    description: Überspringt große HACS-Frontend-Bundles, Sourcemaps, komprimierte Assets und Fonts beim Export von custom_components.
+    name: Raw-.storage-Dateien exportieren
+    description: Exportiert ausgewählte sanitierte .storage-Dateien zusätzlich zu den normalisierten JSON-Dateien.

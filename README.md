@@ -8,58 +8,24 @@ Dieses Repository enthält Home Assistant Apps von **binoalien**.
 
 ### ChatGPT HA Exporter
 
-Ordner:
+Der **ChatGPT HA Exporter** erzeugt ein sanitisiertes Analysepaket aus einem bestehenden Home-Assistant-System.
 
-`chatgpt_ha_exporter`
-
-Der **ChatGPT HA Exporter** erstellt ein sanitisiertes, strukturtreues Analysepaket aus Home Assistant, damit eine andere ChatGPT-Instanz dein Setup analysieren, verbessern und refactoren kann.
+Ziel:
+- strukturierte Weitergabe an ChatGPT
+- weniger Fehlannahmen bei Analyse und Refactoring
+- sichere Übergabe mit reduzierten sensitiven Daten
 
 ## Installation
 
 1. Klicke auf den Link oben
-2. Repository zu Home Assistant hinzufügen
+2. Füge das Repository zu Home Assistant hinzu
 3. Öffne **Einstellungen → Apps**
 4. Installiere **ChatGPT HA Exporter**
 
-## Zweck
-
-Dieses Repository stellt Apps bereit, die speziell für:
-
-- Analyse mit ChatGPT
-- strukturierte Refactorings
-- Performance-Optimierung
-- Sicherheitsbewertung
-- Greenfield-Neuaufbau
-
-entwickelt wurden.
-
-## Empfohlener Workflow
-
-### Bestehendes System optimieren
-
-- Export erzeugen
-- Archiv an ChatGPT übergeben
-- Analyse und Refactoring durchführen
-
-### Komplett neu aufbauen (empfohlen)
-
-- Export erzeugen
-- Anforderungen extrahieren
-- neues System ohne Altlasten planen
-- saubere Zielarchitektur umsetzen
-
 ## Dokumentation
 
-Die vollständige Dokumentation der App liegt im App-Ordner:
-
 - `chatgpt_ha_exporter/README.md` – Überblick und Nutzung
-- `chatgpt_ha_exporter/DOCS.md` – technische Details
-- `chatgpt_ha_exporter/EXPORT_SCHEMA.md` – formale Exportstruktur (Schema / API)
-- `chatgpt_ha_exporter/CHATGPT_WORKFLOWS.md` – Workflows und Prompts
+- `chatgpt_ha_exporter/DOCS.md` – technische Dokumentation
+- `chatgpt_ha_exporter/EXPORT_SCHEMA.md` – formale Exportstruktur
+- `chatgpt_ha_exporter/CHATGPT_WORKFLOWS.md` – empfohlene ChatGPT-Workflows und Prompts
 - `chatgpt_ha_exporter/CHANGELOG.md` – Versionshistorie
-
-## Hinweis
-
-Dieses Repository ist ein **Home Assistant App Repository**.
-
-Der Exporter ist **kein Backup-Tool**, sondern ein **Analyse-Tool für ChatGPT**.
