@@ -1,431 +1,505 @@
-# ChatGPT HA Exporter – technische Dokumentation
+# ChatGPT HA Exporter – Technical Documentation
 
-## 1. Überblick
+The ChatGPT HA Exporter generates a sanitised analytics package from Home Assistant.
 
-Der ChatGPT HA Exporter erzeugt ein sanitisiertes Analysepaket aus Home Assistant. Das Paket ist nicht auf Wiederherstellung optimiert, sondern auf **Analyse, Kontext-Erhalt und sichere Weitergabe**.
+This documentation describes:
 
-Der Exporter versucht drei Ziele gleichzeitig zu erfüllen:
+- Architecture and export pipeline
+- Data ranges included
+- Sanitisation strategy
+- Configuration model
+- Limitations and troubleshooting
 
-- **ausreichende Tiefe** für belastbare Analyse
-- **Datensparsamkeit** bei sensiblen Inhalten
-- **Strukturtreue** für Beziehungen und Refactoring-Kontext
+For a formal, machine-readable description of the export structure, see:
 
-## 2. Grundprinzipien
+👉 **`EXPORT_SCHEMA.md`**
 
-### 2.1 Analyse statt Backup
+This file serves as a **schema / API contract for ChatGPT and other analytics instances**.
 
-Der Exporter ist kein klassisches Backup-System. Er priorisiert:
+---
 
-- Struktur
-- Beziehungen
-- Inventarisierung
-- Laufzeitkontext
-- Auswertungshilfen
+## 2. Core Principles
 
-### 2.2 Sanitization mit Strukturerhalt
+### Analysis > Backup
 
-Sensible Inhalte werden redigiert oder pseudonymisiert. Dabei gilt:
+Focus:
 
-- echte Secrets und operative Zugangsdaten sollen nicht im Klartext landen
-- referenzielle Beziehungen sollen erhalten bleiben
-- Devices, Entities, Areas und Config Entries sollen weiter zusammen analysierbar bleiben
+- structure
+- relationships
+- runtime context
+- diagnostics
 
-### 2.3 Ein Archiv, kein verstreutes Ausgabeziel
+Not focus:
 
-Der Export läuft intern in ein temporäres Arbeitsverzeichnis und endet in **einem TAR.GZ-Archiv unter `/share`**. Das entpackte Arbeitsverzeichnis wird danach entfernt.
+- full raw replication
+- restore fidelity
 
-## 3. Exportphasen
+---
 
-## 3.1 Quelldateien einsammeln
+### Structure-Preserving Sanitization
 
-Aus dem Home-Assistant-Konfigurationsordner werden – abhängig von den Optionen – relevante Dateien und Verzeichnisse gelesen, darunter:
+- secrets and sensitive values are redacted
+- references remain intact
+- relationships stay analyzable
 
-- Hauptkonfiguration
-- Dashboards
-- Blueprints
-- Custom Components
-- Python-/Pyscript-/AppDaemon-Logik
-- ESPHome-Quellen
-- Themes
-- Zusatzdateien für Analyse und Kontext
+Preserved:
 
-## 3.2 `.storage` erfassen und normalisieren
+- entity relationships
+- device mappings
+- config entry links
+- domains, slugs, versions
 
-Ausgewählte `.storage`-Dateien werden nicht nur roh, sondern zusätzlich normalisiert ausgewertet. Das betrifft unter anderem:
+---
 
-- Registries
-- Config Entries
-- Frontend-Kontext
-- Security-/Auth-/Netzwerk-Kontext
-- Trace-/Repairs-Daten
-- Helper- und Template-Definitionen
-- Integrationsspezifische Metadaten
+### Single Output Artifact
 
-## 3.3 Runtime- und API-Kontext erfassen
+- one `.tar.gz`
+- stored in `/share`
+- no leftover working directory
 
-Zusätzlich können Laufzeitdaten abgefragt werden, z. B.:
+---
 
-- aktueller State-Snapshot
-- Service-Katalog
-- Supervisor-Informationen
-- Core-/Supervisor-/Add-on-Logs
-- Backup-Kontext
-- Add-on-Informationen und Add-on-Optionen
+## 3. Export Pipeline
 
-## 3.4 Zusatzberichte erzeugen
+### 3.1 Source Collection
 
-Aus den exportierten Daten werden zusätzliche Inventare und Berichte abgeleitet, etwa:
+From Home Assistant config:
 
-- Security-/Exposure-Report
-- Relationship-Integrity-Report
-- Integrationsprofile
-- Unsicherheitsregister
-- Export-Manifest, Report und Summary
+- core configuration
+- dashboards
+- blueprints
+- custom components
+- python/pyscript/appdaemon
+- ESPHome
+- themes
 
-## 4. Verzeichnisstruktur des Exportarchivs
+---
 
-## 4.1 `source_sanitized/`
+### 3.2 Storage Extraction
 
-Sanitisierte Quelldateien und -verzeichnisse aus der Home-Assistant-Konfiguration.
+`.storage` data is:
 
-Typische Inhalte:
+- exported (sanitized)
+- normalized for analysis
 
-- `config/`
-- `dashboards/`
-- `blueprints/`
-- `custom_components/`
-- `python_scripts/`
-- `pyscript/`
-- `appdaemon/`
-- `esphome/`
-- referenzierte Theme-Dateien
+Includes:
 
-## 4.2 `normalized/`
+- registries
+- config entries
+- frontend state
+- security/auth/network
+- trace + repairs
+- helpers + templates
+- integration metadata
 
-Normalisierte JSON-Sichten auf exportierte Daten.
+---
 
-Typische Inhalte:
+### 3.3 Runtime + API Context
 
-- `normalized/storage/*.json`
-- sanitisierte und für Analyse vereinheitlichte Strukturansichten
+Optional runtime data:
 
-## 4.3 `inventory/`
+- state snapshots
+- service catalog
+- supervisor/core info
+- logs (core, supervisor, add-ons)
+- backup metadata
+- add-on options + stats
 
-Strukturierte Auswertungen und Inventare.
+---
 
-Typische Inhalte:
+### 3.4 Derived Reports
 
-- `addons.json`
-- `api_config.json`
-- `core_info.json`
-- `supervisor_info.json`
-- `storage_inventory.json`
-- `config_inventory.json`
-- `helper_source_definitions*.json`
-- `template_source_definitions*.json`
-- `relationship_integrity_report.json`
-- `security_exposure_report.json`
-- `integration_profiles/*.json`
-- `uncertainty_register.json`
+Generated artifacts:
 
-## 4.4 `runtime/`
+- relationship integrity report
+- security exposure report
+- integration profiles
+- uncertainty register
+- export manifest/report/summary
 
-Laufzeitbezogene Daten und Zusammenfassungen.
+---
 
-Typische Inhalte:
+## 4. Export Structure
 
-- `state_snapshot.ndjson`
-- `state_snapshots/*.ndjson`
-- `state_snapshots_summary.json`
-- `core.latest.log.txt`
-- `supervisor.latest.log.txt`
-- `addon_logs/*.txt`
-- Recorder-Zusammenfassungen und Recorder-Tiefenexporte
+### `source_sanitized/`
 
-## 4.5 `metadata/`
+Sanitized Home Assistant source:
 
-Metadaten zum Export selbst.
+- config
+- dashboards
+- blueprints
+- custom_components
+- python/pyscript/appdaemon
+- esphome
+- themes
 
-Typische Inhalte:
+---
 
-- `export_manifest.json`
-- `export_report.json`
-- `export_summary.md`
-- `checksums.sha256`
-- `operator_intent_template.md`
-- `operator_intent_import_manifest.json`
-- `operator_intent_context.json`
+### `normalized/`
 
-## 5. Wichtige Berichte
+Analysis-ready JSON views:
 
-## 5.1 `export_manifest.json`
+- normalized `.storage`
+- unified structures
 
-Maschinenlesbare Beschreibung des erzeugten Pakets.
+---
 
-Enthält typischerweise:
+### `inventory/`
 
-- Zähler
-- enthaltene Exportblöcke
-- Zielpfade des nutzerrelevanten Archivs
-- Ausführungs- und Strukturmetadaten
+Structured system insights:
 
-## 5.2 `export_report.json`
+- core + supervisor info
+- api config
+- storage + config inventory
+- helper/template definitions
+- integration profiles
+- security exposure
+- uncertainty register
 
-Strukturierter Ergebnisbericht des Laufs.
+---
 
-Enthält typischerweise:
+### `runtime/`
 
-- Statusinformationen
-- Warnungen
-- erzeugte Inventare und Runtime-Blöcke
-- Zusammenfassung der wichtigsten Exportteile
+Runtime context:
 
-## 5.3 `export_summary.md`
+- state snapshots
+- snapshot deltas
+- logs
+- recorder summaries + samples
 
-Menschenlesbare Kurzfassung des Exports.
+---
 
-Geeignet, um schnell zu sehen:
+### `metadata/`
 
-- was exportiert wurde
-- welche Warnungen es gab
-- welche Hauptbereiche vorhanden sind
+Export metadata:
 
-## 5.4 `relationship_integrity_report.json`
+- manifest
+- report
+- summary
+- checksums
+- operator intent context
 
-Prüft, ob zentrale Verknüpfungen erhalten geblieben sind, insbesondere:
+---
 
-- Device ↔ Entity
-- Area ↔ Device
-- Config Entry ↔ Device/Entity
+## 5. Key Reports
 
-## 5.5 `security_exposure_report.json`
+### Export Manifest
 
-Sammelt sicherheitsrelevanten Strukturkontext, z. B.:
+Machine-readable:
 
-- HTTP-/URL-Kontext
-- Auth-/Provider-Sicht
-- Exposed Entities
-- Netzwerk-Hinweise
-- Mobile App / Assist / Frontend-Hinweise, sofern exportiert
+- file counts
+- included modules
+- export structure
 
-## 5.6 `uncertainty_register.json`
+---
 
-Maschinenlesbare Liste verbleibender Unsicherheiten.
+### Export Report
 
-Unterschieden werden insbesondere:
+Execution summary:
+
+- warnings
+- enabled features
+- runtime coverage
+
+---
+
+### Export Summary
+
+Human-readable:
+
+- quick overview
+- warnings
+- major components
+
+---
+
+### Relationship Integrity
+
+Validates:
+
+- device ↔ entity
+- area ↔ device
+- config entry ↔ entity/device
+
+---
+
+### Security Exposure
+
+Includes:
+
+- HTTP context
+- auth providers
+- exposed entities
+- network signals
+- mobile/assist/frontend context
+
+---
+
+### Uncertainty Register
+
+Classifies gaps:
 
 - `hard_export_gap`
 - `export_scope_gap`
 - `principled_uncertainty`
 
-## 6. Sanitization-Strategie
+---
 
-## 6.1 Redigiert werden vor allem
+## 6. Sanitization Model
 
-- Secrets
-- Tokens
-- Webhook-IDs
-- Client-Secrets
-- Hosts und operative Zugangspfade, wenn sie als sensibel bewertet werden
-- Felder, die typischerweise direkte Zugangsdaten oder Recovery-relevante Interna enthalten
+### Redacted
 
-## 6.2 Erhalten bleiben sollen
+- secrets
+- tokens
+- webhook IDs
+- client secrets
+- sensitive endpoints
 
-- Slugs
-- Versionen
-- Domains
-- nicht sensible Komponentenbezeichnungen
-- Entity-/Device-/Area-/Config-Entry-Beziehungen
-- analytisch notwendige Strukturfelder
+---
 
-## 6.3 Pseudonymisierung
+### Preserved
 
-Wo nötig, werden Werte nicht einfach gelöscht, sondern stabil pseudonymisiert, damit Referenzen im Paket erhalten bleiben.
+- slugs
+- versions
+- domains
+- structure
+- relationships
 
-## 7. Konfigurationsoptionen
+---
 
-Die Optionen in `config.yaml` steuern den Umfang des Exports. Die folgenden Gruppen sind wichtiger als eine bloße alphabetische Liste.
+### Pseudonymization
 
-## 7.1 Grundlegender Analyseumfang
+Used when:
 
-- `include_current_state_snapshot`
-- `include_service_catalog`
-- `include_dashboards`
-- `include_blueprints`
-- `include_custom_components`
+- value must stay referencable
+- but must not leak original data
 
-Diese Optionen steuern die Basis für Struktur- und UI-Analyse.
+---
 
-## 7.2 Zusätzliche Quelllogik
+## 7. Configuration Model
 
-- `include_python_scripts`
-- `include_pyscript`
-- `include_appdaemon`
-- `include_esphome`
-- `include_themes`
+### Base Analysis
 
-Diese Gruppe ist wichtig, wenn Logik nicht nur in YAML und UI-Entities steckt.
+- state snapshot
+- services
+- dashboards
+- blueprints
+- custom components
 
-## 7.3 Logs und Laufzeit
+---
 
-- `include_logs`
-- `include_log_archives`
-- `max_log_lines`
-- `include_supervisor_logs`
-- `include_addon_logs`
-- `addon_log_lines`
+### Logic Sources
 
-Sinnvoll für Fehleranalyse, Startprobleme und Laufzeitkorrelation.
+- python_scripts
+- pyscript
+- appdaemon
+- esphome
+- themes
 
-## 7.4 Recorder
+---
 
-- `include_recorder_summary`
-- `include_recorder_deep_export`
-- `include_recorder_db_copy`
-- `recorder_days`
-- `recorder_state_sample_limit`
-- `recorder_event_sample_limit`
-- `recorder_statistics_limit`
-- `recorder_entity_history_limit`
+### Runtime + Logs
 
-Diese Gruppe steuert, ob nur eine Zusammenfassung oder tieferer Recorder-Kontext exportiert wird.
+- logs (core + supervisor + add-ons)
+- archived logs
+- snapshot sequences
 
-## 7.5 Storage und Systemkontext
+---
 
-- `include_raw_storage_files`
-- `include_extended_storage`
-- `include_security_storage`
-- `include_backup_metadata`
-- `include_frontend_storage`
-- `include_trace_storage`
+### Recorder
 
-Diese Optionen erweitern die `.storage`-Abdeckung und sind oft entscheidend für tiefe Analyse.
+- summary
+- deep export (states/events/statistics)
+- optional DB copy
 
-## 7.6 Abgeleitete Spezialberichte
+---
 
-- `include_helper_source_definitions`
-- `include_template_source_definitions`
-- `include_relationship_integrity_report`
-- `include_backup_deep_context`
-- `include_security_exposure_report`
-- `include_integration_profiles`
-- `include_uncertainty_register`
+### Storage Coverage
 
-Diese Berichte erhöhen die Nutzbarkeit für nachgelagerte Analyse-Instanzen deutlich.
+- raw storage
+- extended storage
+- security storage
+- frontend storage
+- trace storage
+- backup metadata
 
-## 7.7 One-shot- und Zusatzkontext
+---
 
-- `include_multi_state_snapshots`
-- `multi_state_snapshot_count`
-- `multi_state_snapshot_interval_seconds`
-- `include_operator_intent_template`
-- `include_operator_intent_import`
-- `include_addon_options_export`
-- `include_addon_stats`
-- `slim_hacs_assets`
+### Derived Analysis
 
-## 8. Empfohlene Einstellungen
+- helper definitions
+- template definitions
+- relationship integrity
+- security exposure
+- integration profiles
+- uncertainty register
 
-## 8.1 Solider Standardexport
+---
 
-Geeignet für die meisten Analysen:
+### Advanced Features
 
-- States: an
-- Services: an
-- Dashboards/Blueprints/Custom Components: an
-- Logs: an
-- Recorder Summary: an
-- Recorder Deep Export: an
-- Extended/Security/Trace Storage: an
-- Integration Profiles: an
-- Uncertainty Register: an
-- HACS Slimming: an
+- multi snapshots
+- operator intent template/import
+- add-on options export
+- add-on stats
+- HACS slimming
 
-## 8.2 Datenschutzsensibler Export
+---
 
-Wenn du mehr minimieren willst:
+## 8. Recommended Profiles
 
-- `include_recorder_db_copy: false`
-- Logs ggf. kürzen
-- nur die wirklich nötigen Zusatzverzeichnisse einschalten
-- Operator Intent separat und bewusst formulieren
+### Standard
 
-## 8.3 Tiefenanalyse / Refactoring-Vorbereitung
+Balanced:
 
-Empfohlen für maximale Analysefähigkeit:
+- snapshots
+- logs
+- recorder summary + deep export
+- extended + security storage
+- integration profiles
+- uncertainty register
 
-- alle wichtigen Inventare an
-- Recorder Deep Export an
-- Multi-Snapshots an
-- Security/Trace/Frontend/Extended Storage an
-- Add-on-Options-Export an
-- Integrationsprofile an
-- Operator Intent bereitstellen
+---
+
+### Privacy-Focused
+
+Reduced exposure:
+
+- no recorder DB copy
+- reduced logs
+- minimal optional directories
+- operator intent externalized
+
+---
+
+### Deep Analysis / Refactoring
+
+Maximum insight:
+
+- full storage coverage
+- deep recorder export
+- multi snapshots
+- add-on options export
+- integration profiles
+- operator intent provided
+
+---
 
 ## 9. Troubleshooting
 
-## 9.1 Themes-Warnung
+### Missing Themes
 
-Wenn `configuration.yaml` Themes referenziert, aber das Zielverzeichnis fehlt oder leer ist, meldet der Exporter das.
+Cause:
 
-Prüfen:
+- referenced but not present
 
-- existiert das referenzierte Verzeichnis im echten HA-Config-Ordner?
-- liegen dort `.yaml`-Dateien?
-- ist der Include-Pfad in `configuration.yaml` korrekt?
+Check:
 
-## 9.2 Fehlende Logs
+- directory exists
+- contains YAML files
+- path is correct
 
-Wenn bestimmte Logs fehlen:
+---
 
-- prüfen, ob die jeweilige Log-Option aktiv ist
-- prüfen, ob der Endpunkt oder die Datei in der Instanz verfügbar ist
-- beachten, dass Add-on-Logs Supervisor-Rechte und funktionierende Endpunkte benötigen
+### Missing Logs
 
-## 9.3 Keine Daten zu bestimmten Bereichen
+Check:
 
-Das bedeutet nicht immer einen Fehler. Mögliche Ursachen:
+- options enabled
+- endpoint availability
+- supervisor permissions
 
-- Bereich ist im System nicht vorhanden
-- Bereich ist per Option deaktiviert
-- Bereich ist vorhanden, aber nicht lesbar oder nicht verfügbar
-- Bereich wurde bewusst aus Scope- oder Datenschutzgründen ausgelassen
+---
 
-## 9.4 Start on boot
+### Missing Data
 
-Das Add-on ist als One-shot-App gedacht. Falls **Start on boot** in deiner bestehenden Installation noch aktiv ist, deaktiviere den Schalter im Home-Assistant-UI.
+Possible reasons:
 
-## 10. Grenzen des Ansatzes
+- not present in system
+- disabled via config
+- not accessible
+- intentionally excluded
 
-Auch ein sehr guter Export beseitigt nicht jede Unsicherheit.
+---
 
-Nicht rein datenbasiert klärbar sind zum Beispiel:
+### Start on Boot
 
-- gewünschte Zielarchitektur
-- absichtlich beibehaltene Altlasten
-- bevorzugte Namenssprache
-- geschäftskritische Automationen
-- Bereiche, die nie automatisch geändert werden dürfen
+This is a **one-shot app**.
 
-Dafür ist eine zusätzliche Datei wie `operator_intent.md` oder `operator_intent.json` sehr hilfreich.
+If still active:
 
-## 11. Empfohlene Weitergabe an andere ChatGPT-Instanzen
+- disable manually in Home Assistant UI
 
-Für beste Ergebnisse:
+---
 
-1. Export erzeugen.
-2. Archiv hochladen.
-3. Zuerst eine Instanz nur aufbereiten und inventarisieren lassen.
-4. Danach eine zweite Instanz auf Basis dieser strukturierten Aufbereitung optimieren und refactoren lassen.
+## 10. Limitations
 
-So trennst du **Analyse** und **Änderungsplanung** sauber voneinander.
+Not solvable by export alone:
 
-## 13. Empfohlene Nutzung mit ChatGPT
+- architectural intent
+- naming conventions
+- critical automations
+- intentional legacy behavior
 
-Eine praktische, prompt-orientierte Anleitung für den Einsatz dieses Exporters mit ChatGPT findest du in **`CHATGPT_WORKFLOWS.md`**.
-Diese Datei enthält:
+---
 
-- den empfohlenen Zwei-Instanzen-Workflow für Analyse und Optimierung des bestehenden Systems
-- einen separaten Zwei-Instanzen-Greenfield-Workflow für den kompletten Neuaufbau ohne Altlasten
-- copy-paste-fertige Prompts für beide Instanzen
-- Hinweise zu Operator Intent und Übergabe-Artefakten
+## 11. Operator Intent
+
+Recommended:
+
+- `operator_intent.md`
+- `operator_intent.json`
+
+Contains:
+
+- target architecture
+- constraints
+- non-changeable areas
+- design decisions
+
+---
+
+## 12. ChatGPT Usage
+
+See:
+
+**`CHATGPT_WORKFLOWS.md`**
+
+Includes:
+
+- two-instance workflow
+- greenfield rebuild strategy
+- ready-to-use prompts
+- handover strategy
+
+---
+
+## 13. Export Schema (Machine Contract)
+
+The file **`EXPORT_SCHEMA.md`** describes the export structure in a formal, machine-readable format.
+
+It is relevant for:
+
+- ChatGPT instances
+- Analysis pipelines
+- Validation of exports
+- Future compatibility
+
+Difference from this documentation:
+
+| File | Purpose |
+|------|------|
+| DOCS.md | Technical explanation for humans |
+| EXPORT_SCHEMA.md | Structured contract for machines |
+
+### When to use EXPORT_SCHEMA.md?
+
+- when writing analysis prompts
+- when validating an export
+- when developing further tools
+- when comparing different export versions
+
+### Important
+
+DOCS.md describes **how the export works**  
+EXPORT_SCHEMA.md describes **how the export is structured**
