@@ -2,30 +2,62 @@
 
 [Add Binoalien Home Assistant Apps to Home Assistant](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fbinoalien%2Fhome-assistant-apps)
 
-Dieses Repository enthält Home Assistant Apps von **binoalien**.
+This repository contains Home Assistant apps by **binoalien**.
 
-## Enthaltene App
+## Included app
 
 ### ChatGPT HA Exporter
 
-Der **ChatGPT HA Exporter** erzeugt ein sanitisiertes Analysepaket aus einem bestehenden Home-Assistant-System.
+Folder:
 
-Ziel:
-- strukturierte Weitergabe an ChatGPT
-- weniger Fehlannahmen bei Analyse und Refactoring
-- sichere Übergabe mit reduzierten sensitiven Daten
+`chatgpt_ha_exporter`
+
+**ChatGPT HA Exporter** creates a sanitized, structure-preserving analysis package from Home Assistant so another ChatGPT instance can inspect, improve, optimize, refactor, or redesign the system with fewer wrong assumptions.
 
 ## Installation
 
-1. Klicke auf den Link oben
-2. Füge das Repository zu Home Assistant hinzu
-3. Öffne **Einstellungen → Apps**
-4. Installiere **ChatGPT HA Exporter**
+1. Click the link above.
+2. Add the repository to Home Assistant.
+3. Open **Settings → Apps**.
+4. Install **ChatGPT HA Exporter**.
 
-## Dokumentation
+## What this repository is for
 
-- `chatgpt_ha_exporter/README.md` – Überblick und Nutzung
-- `chatgpt_ha_exporter/DOCS.md` – technische Dokumentation
-- `chatgpt_ha_exporter/EXPORT_SCHEMA.md` – formale Exportstruktur
-- `chatgpt_ha_exporter/CHATGPT_WORKFLOWS.md` – empfohlene ChatGPT-Workflows und Prompts
-- `chatgpt_ha_exporter/CHANGELOG.md` – Versionshistorie
+This repository provides Home Assistant apps that are designed for:
+
+- ChatGPT-assisted system analysis
+- refactoring preparation
+- performance and maintainability work
+- security and exposure review
+- greenfield rebuild planning
+
+## Recommended use
+
+### Improve an existing system
+
+- generate an export
+- hand the archive to ChatGPT
+- analyze first, then optimize and refactor
+
+### Rebuild from scratch without legacy baggage
+
+- generate an export
+- extract requirements and critical behavior
+- define a clean target architecture
+- rebuild deliberately instead of polishing legacy structure
+
+## Documentation
+
+The full app documentation lives in the app folder:
+
+- `chatgpt_ha_exporter/README.md` – overview and usage
+- `chatgpt_ha_exporter/DOCS.md` – technical reference
+- `chatgpt_ha_exporter/EXPORT_SCHEMA.md` – formal export structure contract
+- `chatgpt_ha_exporter/CHATGPT_WORKFLOWS.md` – recommended ChatGPT workflows and prompts
+- `chatgpt_ha_exporter/CHANGELOG.md` – version history
+
+## Note
+
+This repository is a **Home Assistant app repository**.
+
+The exporter is **not a backup or restore tool**. It is an **analysis export tool for ChatGPT-driven review and redesign**.
