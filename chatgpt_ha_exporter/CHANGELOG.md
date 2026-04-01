@@ -2,6 +2,13 @@
 
 This history was reconstructed as accurately as possible from the surviving project state and export/audit milestones. Early entries are less exact than later ones.
 
+## 0.6.1
+
+- sharpens uncertainty semantics for missing logic directories by distinguishing truly absent sources from export-scope gaps
+- stabilizes `operator_intent_context.json` so it is always an object with explicit status metadata
+- enriches storage-derived template definitions with linked `entity_id` / `entity_ids` when they can be reconstructed from the entity registry
+- clarifies log fallback reporting when local `home-assistant.log` files are missing but API runtime logs were exported
+
 ## 0.6.0
 
 - restores the later large-scale exporter state as a coherent project baseline

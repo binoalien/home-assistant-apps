@@ -4,7 +4,7 @@
 
 **ChatGPT HA Exporter** generates a sanitized, structure-preserving analysis package from Home Assistant.
 
-Version: **0.6.0**
+Version: **0.6.1**
 
 ## Purpose
 

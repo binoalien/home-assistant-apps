@@ -26,7 +26,7 @@ SHARE_DIR = Path("/share")
 WORK_DIR = DATA_DIR / "workdir"
 OPTIONS_PATH = DATA_DIR / "options.json"
 SUPERVISOR_TOKEN = os.environ.get("SUPERVISOR_TOKEN", "")
-EXPORTER_VERSION = "0.6.0"
+EXPORTER_VERSION = "0.6.1"
 TEXT_FILE_SUFFIXES = {
     ".txt", ".yaml", ".yml", ".json", ".py", ".js", ".ts", ".md", ".conf", ".cfg", ".ini", ".xml", ".csv", ".log", ".html", ".css", ".sh",
 }
@@ -721,14 +721,18 @@ def extract_template_defs_from_storage_payload(data: Any, source_name: str) -> l
             if not isinstance(item, dict):
                 continue
             path = ("data", "items", str(idx))
-            definitions.append({
+            entity_id = item.get("entity_id") if isinstance(item.get("entity_id"), str) else None
+            row = {
                 "source": source_name,
                 "source_type": "storage",
                 "template_kind": item.get("template_type") or item.get("type"),
                 "name": item.get("name") or item.get("friendly_name"),
                 "path": "/".join(path),
                 "definition": sanitize_data(item, context={"storage_name": source_name, "path_parts": path}),
-            })
+            }
+            if entity_id:
+                row["entity_id"] = entity_id
+            definitions.append(row)
     if source_name == "core.config_entries":
         entries = data.get("data", {}).get("entries", []) if isinstance(data.get("data"), dict) else []
         for idx, entry in enumerate(entries):
@@ -955,6 +959,36 @@ def export_storage(export_dir: Path, options: dict[str, Any], stats: ExportStats
                 pass
         else:
             info["available_only"].append(name)
+    entity_ids_by_config_entry: dict[str, list[str]] = {}
+    entity_registry_path = storage_root / "core.entity_registry"
+    if entity_registry_path.exists():
+        try:
+            entity_registry = json.loads(entity_registry_path.read_text(encoding="utf-8", errors="ignore"))
+            entries = entity_registry.get("data", {}).get("entities", []) if isinstance(entity_registry.get("data"), dict) else []
+            for row in entries:
+                if not isinstance(row, dict):
+                    continue
+                entity_id = row.get("entity_id")
+                if not isinstance(entity_id, str) or not entity_id:
+                    continue
+                entry_ids = row.get("config_entry_id") or row.get("config_entries")
+                if isinstance(entry_ids, str):
+                    entry_ids = [entry_ids]
+                if isinstance(entry_ids, list):
+                    for config_entry_id in entry_ids:
+                        if isinstance(config_entry_id, str) and config_entry_id:
+                            pseudo_entry_id = PSEUDONYMIZER.pseudonymize("config_entry", config_entry_id)
+                            entity_ids_by_config_entry.setdefault(pseudo_entry_id, []).append(entity_id)
+        except Exception:
+            pass
+    for row in template_defs:
+        if row.get("source") == "core.config_entries" and isinstance(row.get("entry_id"), str):
+            linked = sorted(dict.fromkeys(entity_ids_by_config_entry.get(row["entry_id"], [])))
+            if linked:
+                row["entity_ids"] = linked
+                row["entity_id"] = linked[0]
+                if len(linked) > 1:
+                    row["entity_id_note"] = "multiple_entities_linked"
     write_json(export_dir / "inventory" / "storage_inventory.json", info)
     stats.included_files.append(str(export_dir / "inventory" / "storage_inventory.json"))
     if options.get("include_helper_source_definitions", True):
@@ -966,6 +1000,7 @@ def export_storage(export_dir: Path, options: dict[str, Any], stats: ExportStats
         write_json(template_path, template_defs)
         stats.included_files.append(str(template_path))
     return info
+
 def export_api_inventory(export_dir: Path, options: dict[str, Any], stats: ExportStats) -> dict[str, Any]:
     metadata: dict[str, Any] = {}
     ok, supervisor_info = try_api_json("http://supervisor/info", stats)
@@ -1193,7 +1228,12 @@ def export_logs(export_dir: Path, options: dict[str, Any], stats: ExportStats) -
             except Exception as exc:
                 stats.warnings.append(f"Log export failed: {exc}")
     if not details["files"] and not details["tails"]:
-        stats.excluded_items.append("home-assistant.log missing")
+        api_runtime_logs = [name for name in ("core.latest.log.txt", "supervisor.latest.log.txt") if (export_dir / "runtime" / name).exists()]
+        addon_log_dir = export_dir / "runtime" / "addon_logs"
+        if api_runtime_logs or (addon_log_dir.exists() and any(addon_log_dir.iterdir())):
+            stats.excluded_items.append("Local home-assistant.log files missing; API runtime log fallback was exported")
+        else:
+            stats.excluded_items.append("home-assistant.log missing and no API runtime log fallback exported")
     return details
 def query_one(cursor: sqlite3.Cursor, sql: str, params: tuple[Any, ...] = ()) -> Any:
     cursor.execute(sql, params)
@@ -1912,8 +1952,9 @@ def build_uncertainty_register(export_dir: Path, options: dict[str, Any], stats:
     for folder, item_id, title in (("python_scripts", "UNC-LOGIC-001", "python_scripts missing"), ("pyscript", "UNC-LOGIC-002", "pyscript missing"), ("appdaemon", "UNC-LOGIC-003", "appdaemon missing")):
         if options.get(f"include_{folder}", True):
             present = (export_dir / "source_sanitized" / folder).exists()
-            if not present:
-                add_item(item_id, "export_scope_gap", "medium", title, f"{folder}/ was not exported or did not exist, which can leave externalized logic unclear.", [{"source": "source_sanitized", "fact": f"{folder}/ missing"}], [f"export {folder}/ completely if it is used"])
+            source_exists = (HA_CONFIG_DIR / folder).exists()
+            if not present and source_exists:
+                add_item(item_id, "export_scope_gap", "medium", title, f"{folder}/ exists in the source system but was not exported, which can leave externalized logic unclear.", [{"source": "source_sanitized", "fact": f"{folder}/ missing while source directory exists"}], [f"export {folder}/ completely if it is used"])
     critical_storage = {
         "trace.saved_traces": "UNC-TRACE-001",
         "repairs.issue_registry": "UNC-TRACE-002",
@@ -2171,8 +2212,23 @@ def import_operator_intent(export_dir: Path, options: dict[str, Any], stats: Exp
         "imported": False,
         "sources": [],
         "candidate_count": 0,
+        "status": "disabled" if not options.get("include_operator_intent_import", True) else "not_found",
     }
     if not options.get("include_operator_intent_import", True):
+        manifest_path = export_dir / "metadata" / "operator_intent_import_manifest.json"
+        write_json(manifest_path, info)
+        stats.included_files.append(str(manifest_path))
+        normalized_path = export_dir / "metadata" / "operator_intent_context.json"
+        write_json(normalized_path, {
+            "enabled": False,
+            "imported": False,
+            "status": "disabled",
+            "candidate_count": 0,
+            "source_count": 0,
+            "normalized_sources": [],
+            "context": {},
+        })
+        stats.included_files.append(str(normalized_path))
         return info
     candidates = find_operator_intent_candidates()
     info["candidate_count"] = len(candidates)
@@ -2209,29 +2265,60 @@ def import_operator_intent(export_dir: Path, options: dict[str, Any], stats: Exp
             row["error"] = str(exc)
             imported_rows.append(row)
             stats.warnings.append(f"Operator intent import failed for {src}: {exc}")
+    normalized_sources = [
+        {
+            "source_label": row.get("source_label"),
+            "filename": row.get("filename"),
+            "format": row.get("format"),
+            "normalized": row.get("normalized"),
+        }
+        for row in imported_rows if row.get("parsed")
+    ]
+    merged_context: dict[str, Any] = {}
+    for row in normalized_sources:
+        normalized = row.get("normalized")
+        if isinstance(normalized, dict):
+            for key, value in normalized.items():
+                if key not in merged_context:
+                    merged_context[key] = value
+                else:
+                    existing = merged_context[key]
+                    if isinstance(existing, list):
+                        if isinstance(value, list):
+                            existing.extend(v for v in value if v not in existing)
+                        elif value not in existing:
+                            existing.append(value)
+                    elif isinstance(existing, dict) and isinstance(value, dict):
+                        merged = dict(existing)
+                        merged.update({k: v for k, v in value.items() if k not in merged})
+                        merged_context[key] = merged
+                    elif existing != value:
+                        merged_context[key] = [existing, value] if not isinstance(existing, list) else existing
+    status = "imported" if any(row.get("imported") for row in imported_rows) else ("found_unreadable" if candidates else "not_found")
     summary = {
         "enabled": info["enabled"],
         "imported": any(row.get("imported") for row in imported_rows),
         "candidate_count": len(candidates),
+        "status": status,
         "sources": [
             {k: v for k, v in row.items() if k != 'normalized'}
             for row in imported_rows
         ],
-        "normalized_sources": [
-            {
-                "source_label": row.get("source_label"),
-                "filename": row.get("filename"),
-                "format": row.get("format"),
-                "normalized": row.get("normalized"),
-            }
-            for row in imported_rows if row.get("parsed")
-        ],
+        "normalized_sources": normalized_sources,
     }
     manifest_path = export_dir / "metadata" / "operator_intent_import_manifest.json"
     write_json(manifest_path, summary)
     stats.included_files.append(str(manifest_path))
     normalized_path = export_dir / "metadata" / "operator_intent_context.json"
-    write_json(normalized_path, summary.get("normalized_sources", []))
+    write_json(normalized_path, {
+        "enabled": info["enabled"],
+        "imported": summary["imported"],
+        "status": status,
+        "candidate_count": len(candidates),
+        "source_count": len(normalized_sources),
+        "normalized_sources": normalized_sources,
+        "context": merged_context,
+    })
     stats.included_files.append(str(normalized_path))
     return summary
 def build_security_exposure_report(export_dir: Path, options: dict[str, Any], stats: ExportStats) -> dict[str, Any]:
