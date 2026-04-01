@@ -3,6 +3,7 @@
 Diese Datei beschreibt die **empfohlenen Arbeitsweisen mit ChatGPT** für den ChatGPT HA Exporter.
 
 Sie verfolgt zwei Hauptziele:
+
 - dein **bestehendes** Home-Assistant-Setup möglichst sicher analysieren, verbessern und refactoren
 - bei Bedarf dein aktuelles Setup **komplett neu und ohne Altlasten** aufbauen lassen, ohne die historische Struktur ungeprüft zu übernehmen
 
@@ -17,24 +18,30 @@ Die zentrale Empfehlung lautet:
 ## 1. Überblick: Welcher Workflow für welches Ziel?
 
 ### Workflow A – Bestehendes System verbessern
+
 Nutze diesen Workflow, wenn du:
+
 - dein aktuelles Setup behalten willst
 - Altlasten gezielt abbauen willst
 - Optimierungen, Bugfixes, Sicherheitsverbesserungen und Refactorings auf Basis des Ist-Systems willst
 - das aktuelle Setup als Ausgangspunkt erhalten möchtest
 
 **Empfehlung:** Zwei Instanzen
+
 - **Instanz 1:** Analyse, Aufbereitung, Inventarisierung, Lücken- und Risikoerkennung
 - **Instanz 2:** konkrete Verbesserung, Optimierung, Refactoring, Migrationsvorschläge
 
 ### Workflow B – Home Assistant von Grund auf neu aufbauen
+
 Nutze diesen Workflow, wenn du:
+
 - dein aktuelles Setup **nicht direkt weiterentwickeln**, sondern **neu aufsetzen** willst
 - Altlasten, historisch gewachsene Strukturen, inkonsistente Benennung und Workarounds **nicht übernehmen** willst
 - eine saubere Zielarchitektur aus Anforderungen statt aus Altbestand bauen willst
 - das bestehende System nur noch als **Quellmaterial für Anforderungen, Verhalten und Prioritäten** verwenden willst
 
 **Empfehlung:** Ebenfalls zwei Instanzen
+
 - **Instanz 1:** extrahiert Anforderungen, Regeln, Geräteklassen, Domänenlogik, Betriebsabsicht und Zielprinzipien aus dem Altbestand
 - **Instanz 2:** entwirft und erzeugt ein **sauberes Zielsystem von Grund auf**, ohne Altlasten blind mitzuschleppen
 
@@ -69,6 +76,7 @@ Unabhängig vom Workflow gelten diese Regeln:
 ## 3.1 Zielbild
 
 Dieser Workflow soll dein aktuelles Home Assistant:
+
 - besser strukturieren
 - sicherer machen
 - wartbarer machen
@@ -81,7 +89,9 @@ ohne dabei unnötig Funktionsverhalten zu zerstören.
 ## 3.2 Empfohlene Rollen
 
 ### Instanz 1 – Analyse- und Aufbereitungsinstanz
+
 Diese Instanz macht:
+
 - Entpacken und Inventarisieren
 - Struktur- und Kontextaufbereitung
 - Konsistenzprüfung
@@ -91,12 +101,15 @@ Diese Instanz macht:
 - Handoff-Paket für Instanz 2
 
 Diese Instanz macht **nicht**:
+
 - keine endgültigen Refactorings
 - keine spekulativen Umbauten
 - keine stillen Architekturentscheidungen
 
 ### Instanz 2 – Optimierungs- und Refactoring-Instanz
+
 Diese Instanz macht:
+
 - konkrete Verbesserungsvorschläge
 - Zielarchitektur innerhalb des bestehenden Systems
 - Refactoring-Pläne
@@ -242,6 +255,7 @@ Wichtig:
 Dieser Workflow ist für den Fall gedacht, dass du **nicht** das bestehende Setup „sauberer machen“, sondern **ein neues, sauberes Zielsystem** erzeugen willst.
 
 Dabei ist das aktuelle Home Assistant nur noch:
+
 - Verhaltensquelle
 - Gerätequelle
 - Integrationsquelle
@@ -254,6 +268,7 @@ aber **nicht mehr** die Strukturvorlage.
 Das ist wichtig.
 
 > Der Neuaufbau-Workflow soll das bestehende Setup **nicht spiegeln**, sondern aus dem Ist-System nur extrahieren:
+>
 > - was das System können muss
 > - welche Geräte und Domänen es gibt
 > - welche Automationen fachlich gebraucht werden
@@ -265,6 +280,7 @@ Das ist wichtig.
 ## 4.1 Zielbild des Neuaufbaus
 
 Instanz 2 soll am Ende ein Home-Assistant-Zielsystem entwerfen, das:
+
 - logisch sauber gegliedert ist
 - konsequente Benennung nutzt
 - klare Domänengrenzen hat
@@ -284,6 +300,7 @@ Der größte Fehler bei einem Neuaufbau ist:
 Das willst du hier ausdrücklich **nicht**.
 
 Stattdessen:
+
 - Altbestand analysieren
 - Anforderungen extrahieren
 - Zielprinzipien definieren
@@ -294,7 +311,9 @@ Stattdessen:
 ## 4.3 Empfohlene Rollen
 
 ### Instanz 1 – Requirements- und Blueprint-Instanz
+
 Diese Instanz extrahiert aus dem alten Export:
+
 - fachliche Anforderungen
 - Geräteklassen und Rollen
 - Pflichtfunktionen
@@ -306,13 +325,16 @@ Diese Instanz extrahiert aus dem alten Export:
 - Liste der Dinge, die NICHT übernommen werden sollen
 
 Am Ende liefert sie **kein Refactoring des Altbestands**, sondern:
+
 - Zielprinzipien
 - Anforderungskatalog
 - Architekturleitplanken
 - Blueprint für den Neuaufbau
 
 ### Instanz 2 – Greenfield-Architektur- und Build-Instanz
+
 Diese Instanz nimmt den Blueprint und erzeugt daraus:
+
 - eine saubere Zielarchitektur
 - neue Namenskonventionen
 - neue Paket-/Dateistruktur
@@ -446,6 +468,7 @@ Für beide Workflows ist eine zusätzliche Datei extrem hilfreich:
 - oder `operator_intent.json`
 
 Empfohlene Inhalte:
+
 - Zielarchitektur-Wunsch
 - gewünschte Sprache der Benennung (deutsch, englisch, hybrid)
 - kritische Automationen
@@ -490,12 +513,14 @@ Beispielstruktur:
 ## 6.1 Für Instanz 1
 
 Immer mitgeben:
+
 - das originale Export-Archiv (`.tar.gz`)
 - optional `operator_intent.md`
 
 ## 6.2 Für Instanz 2 im Verbesserungsworkflow
 
 Mitgeben:
+
 - die aufbereitete Ausgabe von Instanz 1
 - insbesondere:
   - `handoff_for_optimizer.md`
@@ -507,6 +532,7 @@ Mitgeben:
 ## 6.3 Für Instanz 2 im Greenfield-Workflow
 
 Mitgeben:
+
 - die aufbereitete Ausgabe von Instanz 1
 - insbesondere:
   - `handoff_for_greenfield_builder.md`
@@ -520,12 +546,14 @@ Mitgeben:
 ## 7. Empfohlene Qualitätsprüfung nach jeder Stufe
 
 Nach Instanz 1 prüfen:
+
 - wurden Fakten und Schlussfolgerungen sauber getrennt?
 - fehlen offensichtliche Kernbereiche?
 - wurden kritische Automationen erkannt?
 - wurden Unsicherheiten explizit gemacht?
 
 Nach Instanz 2 prüfen:
+
 - sind die Vorschläge systembezogen statt generisch?
 - ist die Priorisierung plausibel?
 - wurden riskante Änderungen korrekt markiert?
@@ -536,12 +564,14 @@ Nach Instanz 2 prüfen:
 ## 8. Häufige Fehler, die du vermeiden solltest
 
 ### Beim Verbesserungsworkflow
+
 - dieselbe Instanz analysiert und ändert gleichzeitig alles
 - rohe Exportdaten werden sofort refactoriert
 - Betreiberabsicht wird nicht mitgegeben
 - riskante Änderungen werden nicht isoliert
 
 ### Beim Greenfield-Workflow
+
 - das alte Setup wird einfach hübscher nachgebaut
 - alte Namensfehler werden übernommen
 - Legacy-Helper und Workarounds werden reproduziert
@@ -555,11 +585,13 @@ Nach Instanz 2 prüfen:
 Wenn du nicht viel Zeit investieren willst, nimm mindestens diesen Ablauf:
 
 ### Für Verbesserungen
+
 1. Export erzeugen
 2. Instanz 1 mit Analyse-/Aufbereitungs-Prompt
 3. Instanz 2 mit Optimierungs-/Refactoring-Prompt
 
 ### Für kompletten Neuaufbau
+
 1. Export erzeugen
 2. optional `operator_intent.md` ergänzen
 3. Instanz 1 mit Requirements-/Blueprint-Prompt
@@ -571,13 +603,17 @@ Wenn du nicht viel Zeit investieren willst, nimm mindestens diesen Ablauf:
 
 Die stärkste Standardempfehlung ist:
 
-### Für bestehendes HA:
+### Für bestehendes HA
+
 **Zwei Instanzen**
+
 - Analyse/Aufbereitung
 - Optimierung/Refactoring
 
-### Für kompletten Neuanfang ohne Altlasten:
+### Für kompletten Neuanfang ohne Altlasten
+
 **Zwei Instanzen**
+
 - Requirements/Blueprint aus dem Altbestand
 - Greenfield-Neuaufbau aus dem Blueprint
 

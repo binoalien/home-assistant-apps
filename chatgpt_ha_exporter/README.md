@@ -9,6 +9,7 @@ Version: **0.5.8**
 Dieses Add-on ist kein Backup-Ersatz und kein Restore-Werkzeug. Es ist ein **Analyse-Exporter**.
 
 Ziel ist ein Paket, das:
+
 - genug Struktur und Kontext für tiefgehende Analyse enthält,
 - sensible Daten nicht unnötig offenlegt,
 - Beziehungen zwischen Geräten, Entitäten, Areas, Config Entries und Automationen erhält,
@@ -17,6 +18,7 @@ Ziel ist ein Paket, das:
 ## Was exportiert wird
 
 Je nach Optionen enthält der Export unter anderem:
+
 - sanitisierte Konfigurationsdateien aus dem Home-Assistant-Konfigurationsordner
 - ausgewählte und normalisierte `.storage`-Daten
 - Dashboards, Blueprints und `custom_components`
@@ -35,6 +37,7 @@ Je nach Optionen enthält der Export unter anderem:
 Dieses Add-on soll **kein vollständiges ungefiltertes Abbild** deines Systems erzeugen.
 
 Es ist bewusst darauf ausgelegt,
+
 - Secrets, Tokens, Hosts und ähnliche sensible Werte zu redigieren,
 - Struktur zu erhalten statt rohe Interna blind zu kopieren,
 - Analyse zu ermöglichen, ohne unnötig viele operative Details preiszugeben.
@@ -56,11 +59,13 @@ Es bleibt dort **kein entpacktes Exportverzeichnis** zurück.
 ## Empfohlener Workflow mit ChatGPT
 
 ### Variante A – direkt analysieren lassen
+
 - Export erzeugen
 - Archiv hochladen
 - ChatGPT die Analyse, Aufbereitung oder Refactoring-Vorbereitung machen lassen
 
 ### Variante B – zweistufig
+
 1. Erste ChatGPT-Instanz bereitet den Export strukturiert auf.
 2. Zweite ChatGPT-Instanz nutzt diese aufbereiteten Daten für konkrete Optimierungen und Refactorings.
 
@@ -69,19 +74,23 @@ Diese zweistufige Variante ist besonders sinnvoll, wenn du maximale Sorgfalt und
 ## Wichtige Hinweise
 
 ### One-shot-Verhalten
+
 Das Add-on ist als **One-shot-App** gedacht. Es läuft, erzeugt ein Archiv und beendet sich wieder.
 
 Wenn in einer älteren Installation der Supervisor-Schalter **Start on boot** bereits aktiviert wurde, musst du ihn im Home-Assistant-UI selbst deaktivieren. Das Paket selbst kann diesen benutzerseitigen Laufzeit-Schalter nicht zuverlässig rückwirkend zurücksetzen.
 
 ### Themes-Warnung
+
 Wenn `configuration.yaml` `frontend: themes: !include_dir_merge_named ...` enthält, aber das referenzierte Verzeichnis im echten HA-Config-Ordner fehlt, meldet der Exporter das als Warnung.
 
 Das ist dann meist **ein Befund deines HA-Setups**, nicht automatisch ein Exporter-Fehler.
 
 ### Operator Intent
+
 Wenn du willst, dass eine nachgelagerte Instanz weniger raten muss, lege zusätzlich eine Datei wie `operator_intent.md` oder `operator_intent.json` an.
 
 Darin kannst du z. B. festhalten:
+
 - gewünschte Zielarchitektur
 - kritische Automationen
 - bewusst beibehaltene Altlasten
@@ -90,6 +99,7 @@ Darin kannst du z. B. festhalten:
 ## Exportstruktur auf hoher Ebene
 
 Das Archiv enthält typischerweise diese Hauptbereiche:
+
 - `source_sanitized/` – sanitisierte Quelldateien
 - `normalized/` – normalisierte JSON-Sichten
 - `inventory/` – strukturierte Berichte und Inventare
@@ -99,16 +109,17 @@ Das Archiv enthält typischerweise diese Hauptbereiche:
 ## Für wen dieses Add-on gedacht ist
 
 Der Exporter ist sinnvoll, wenn du:
+
 - Home Assistant mit ChatGPT analysieren willst,
 - eine sichere, strukturierte Übergabe an eine andere Instanz brauchst,
 - Refactorings, Performance-Analysen oder Sicherheitsbewertungen vorbereiten willst,
 - nicht einfach nur ein Backup, sondern ein **analysefähiges Paket** willst.
 
-
 ## ChatGPT-Workflows und Prompts
 
 Eine ausführliche Anleitung für den praktischen Einsatz mit ChatGPT findest du in **`CHATGPT_WORKFLOWS.md`**.
 Dort enthalten sind:
+
 - empfohlene Zwei-Instanzen-Workflows
 - copy-paste-fertige Prompts
 - ein separater Greenfield-Workflow für den kompletten Neuaufbau ohne Altlasten
@@ -118,6 +129,7 @@ Dort enthalten sind:
 
 Die ausführliche technische Dokumentation findest du in **`DOCS.md`**.
 Dort stehen unter anderem:
+
 - Exportphasen
 - Sanitization-Strategie
 - detaillierte Optionsbeschreibung
