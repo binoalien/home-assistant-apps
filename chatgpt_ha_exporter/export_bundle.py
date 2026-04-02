@@ -26,7 +26,7 @@ SHARE_DIR = Path("/share")
 WORK_DIR = DATA_DIR / "workdir"
 OPTIONS_PATH = DATA_DIR / "options.json"
 SUPERVISOR_TOKEN = os.environ.get("SUPERVISOR_TOKEN", "")
-EXPORTER_VERSION = "0.6.1"
+EXPORTER_VERSION = "0.6.2"
 TEXT_FILE_SUFFIXES = {
     ".txt", ".yaml", ".yml", ".json", ".py", ".js", ".ts", ".md", ".conf", ".cfg", ".ini", ".xml", ".csv", ".log", ".html", ".css", ".sh",
 }
@@ -1754,9 +1754,12 @@ def export_addon_options_profiles(export_dir: Path, options: dict[str, Any], sta
         "stats_count": len(stats_rows),
         "critical_profile_count": len(critical),
         "profiles": [{"slug": row.get("slug"), "name": row.get("name"), "state": row.get("state"), "option_key_count": row.get("option_key_count"), "schema_key_count": row.get("schema_key_count")} for row in profiles],
-        "stats": [{"slug": row.get("slug")} for row in stats_rows],
+        "stats_file": "inventory/addon_stats_profiles.json" if stats_rows else None,
+        "stats": [{"slug": row.get("slug"), "status": "ok", "file": "inventory/addon_stats_profiles.json"} for row in stats_rows],
         "stats_supported": stats_supported,
+        "stats_supported_count": len(stats_supported),
         "stats_unsupported": stats_unsupported,
+        "stats_unsupported_count": len(stats_unsupported),
         "stats_error_count": len(stats_errors),
         "stats_errors": stats_errors,
     })
@@ -1943,12 +1946,22 @@ def build_uncertainty_register(export_dir: Path, options: dict[str, Any], stats:
         )
     theme_info = config_info.get("theme_include", {}) if isinstance(config_info, dict) else {}
     if theme_info.get("declared") and theme_info.get("status") != "ok":
-        add_item(
-            "UNC-THEME-001", "hard_export_gap", "medium", "Theme include unresolved", 
-            "configuration.yaml references themes, but the referenced directory was not usable in the export.",
-            [{"source": "inventory/config_inventory.json", "fact": f"theme status={theme_info.get('status')} checked_path={theme_info.get('checked_path')}"}],
-            ["export the referenced theme directory in readable form", "remove the include if themes are not actually used"],
-        )
+        status = str(theme_info.get("status") or "unknown")
+        source_setup_fact = f"theme status={status} checked_path={theme_info.get('checked_path')}"
+        if status in {"missing", "empty", "contains_non_yaml_only"}:
+            add_item(
+                "UNC-THEME-001", "source_setup_issue", "medium", "Theme include unresolved in source setup",
+                "configuration.yaml references themes, but the referenced theme directory is missing or unusable in the source Home Assistant setup.",
+                [{"source": "inventory/config_inventory.json", "fact": source_setup_fact}],
+                ["fix the referenced theme directory in Home Assistant", "remove the include if themes are not actually used"],
+            )
+        else:
+            add_item(
+                "UNC-THEME-001", "principled_uncertainty", "medium", "Theme include unresolved",
+                "configuration.yaml references themes, but the exporter could not fully prove whether this is a source issue or a readability problem.",
+                [{"source": "inventory/config_inventory.json", "fact": source_setup_fact}],
+                ["verify that the referenced theme directory is readable", "remove the include if themes are not actually used"],
+            )
     for folder, item_id, title in (("python_scripts", "UNC-LOGIC-001", "python_scripts missing"), ("pyscript", "UNC-LOGIC-002", "pyscript missing"), ("appdaemon", "UNC-LOGIC-003", "appdaemon missing")):
         if options.get(f"include_{folder}", True):
             present = (export_dir / "source_sanitized" / folder).exists()
@@ -2131,6 +2144,7 @@ def generate_export_summary(export_dir: Path, options: dict[str, Any], stats: Ex
         f"- Security/exposure-Report: {'yes' if security_info.get('generated') else 'no'}",
         f"- Operator intent imported: {'yes' if operator_intent_info.get('imported') else 'no'}",
         f"- Add-on option profiles: {'yes' if addon_options_info.get('exported') else 'no'} ({addon_options_info.get('profile_count', 0)} profiles)",
+        f"- Add-on stats: {addon_options_info.get('stats_count', 0)} stored in {addon_options_info.get('stats_file') or 'no stats file'} (supported={addon_options_info.get('stats_supported_count', 0)}, unsupported={addon_options_info.get('stats_unsupported_count', 0)}, errors={addon_options_info.get('stats_error_count', 0)})",
         f"- Integration profiles: {'yes' if integration_profiles.get('generated') else 'no'}",
         f"- Uncertainty register: {'yes' if uncertainty_info.get('generated') else 'no'} ({(uncertainty_info.get('counts') or {}).get('total', 0)} entries)",
         "",

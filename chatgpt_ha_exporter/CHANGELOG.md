@@ -2,6 +2,12 @@
 
 This history was reconstructed as accurately as possible from the surviving project state and export/audit milestones. Early entries are less exact than later ones.
 
+## 0.6.2
+
+- reclassifies unresolved theme includes in the uncertainty register as source-setup issues when the exporter can prove the theme directory is missing or unusable
+- keeps theme include cases as principled uncertainty only when readability cannot be proven conclusively
+- clarifies add-on stats reporting by exposing the stats file path plus supported/unsupported/error counts in export reports and summaries
+
 ## 0.6.1
 
 - sharpens uncertainty semantics for missing logic directories by distinguishing truly absent sources from export-scope gaps
