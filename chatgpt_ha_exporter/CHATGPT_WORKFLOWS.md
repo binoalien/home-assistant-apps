@@ -2,20 +2,14 @@
 
 ## Scope
 
-This document covers only workflow selection, two-instance role separation, and minimum handoff quality.
-Canonical concept blocks are in `DOC_BLOCKS.md`; export structure contract details are in `EXPORT_SCHEMA.md`.
+This document only covers workflow design, handoff discipline, and prompt usage across ChatGPT instances.
+Shared canonical concept blocks are referenced from `DOC_BLOCKS.md`; export-structure contract details remain in `EXPORT_SCHEMA.md`.
+For canonical documentation responsibilities, see `DOC_BLOCKS.md` → **“Documentation Roles”**.
 
-Documentation roles:
-- `README.md` → overview and installation
-- `DOCS.md` → technical reference
-- `EXPORT_SCHEMA.md` → formal export structure contract
-- `CHATGPT_WORKFLOWS.md` → compact workflow guide
-- `PROMPT_LIBRARY.md` → full copy-paste prompts
+This document explains the **operational use** of ChatGPT HA Exporter with ChatGPT.
 
-Core rule:
-
-> Do **not** use one ChatGPT instance for raw export analysis, target-state definition, and implementation planning.
-> Use a **two-instance workflow**.
+Canonical workflow split is defined in `DOC_BLOCKS.md` → **“Two-Instance Workflow Rule”**.
+This document provides the detailed procedures and prompts that operationalize that rule.
 
 ---
 

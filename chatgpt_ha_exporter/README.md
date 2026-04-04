@@ -4,6 +4,7 @@
 
 This README provides high-level purpose, installation, and usage guidance only.
 Canonical shared concept details are maintained in `DOC_BLOCKS.md`; formal structure contract details are maintained in `EXPORT_SCHEMA.md`.
+For canonical documentation responsibilities, see `DOC_BLOCKS.md` → **“Documentation Roles”**.
 
 [Add Binoalien Home Assistant Apps to Home Assistant](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fbinoalien%2Fhome-assistant-apps)
 
@@ -22,9 +23,7 @@ It produces a package that:
 - includes runtime, trace, recorder, backup, security, helper, template, integration, and refactoring context
 - supports both improvement of an existing system and clean greenfield redesign
 
-It is **not** a backup or restore tool.
-
-In short: this app is not a backup or restore tool.
+It is **not** a backup or restore tool (see `DOC_BLOCKS.md` → **“Core Principles”**).
 
 ## Install
 
@@ -92,26 +91,16 @@ The app produces:
 
 ## Recommended ChatGPT workflow
 
-### Direct path
+For canonical workflow discipline, see `DOC_BLOCKS.md` → **“Two-Instance Workflow Rule”** and `CHATGPT_WORKFLOWS.md`.
 
-- export → upload → analyze
-
-### Recommended path
-
-Use **two ChatGPT instances**:
-
-- **Instance 1** analyzes, inventories, validates, and prepares a handoff package.
-- **Instance 2** uses that prepared material to optimize, refactor, or redesign the system.
+At a glance:
+- quick path: export → upload → analyze
+- recommended path: two-instance workflow with explicit handoff review
 
 ## Greenfield rebuild
 
-The exporter also supports a clean rebuild workflow:
-
-1. export the current system
-2. extract requirements and critical behavior
-3. ignore structural legacy unless intentionally retained
-4. design a clean target architecture
-5. migrate only what is actually needed
+The exporter also supports a clean rebuild workflow.
+For the canonical sequence and role split, see `CHATGPT_WORKFLOWS.md` → **“Workflow B – Greenfield rebuild without legacy baggage”**.
 
 ## Important notes
 

@@ -23,6 +23,40 @@ Notes:
 
 ---
 
+## Documentation Roles
+
+Canonical responsibility split across documentation files:
+
+- `README.md` → overview, install, and high-level usage
+- `DOCS.md` → technical architecture, phases, options, and troubleshooting
+- `EXPORT_SCHEMA.md` → formal machine-oriented export structure contract
+- `CHATGPT_WORKFLOWS.md` → workflow design, instance handoff discipline, and prompt library
+
+---
+
+## Core Principles
+
+Canonical principles across this documentation set:
+
+1. Analysis over backup/restore: prioritize structure, relationships, runtime context, and diagnostics.
+2. Structure-preserving sanitization: remove sensitive values while preserving analyzable linkage.
+3. Single output artifact: exactly one `.tar.gz` written to `/share` without leftover extracted export tree.
+
+---
+
+## Two-Instance Workflow Rule
+
+For high-quality outcomes, do not use one ChatGPT instance for all stages.
+
+Recommended split:
+- **Instance 1:** analysis/inventory/validation/handoff preparation
+- **Instance 2:** optimization/refactoring/rebuild planning and implementation design
+
+Human checkpoint before handoff:
+- review consistency, gaps, operator intent fit, and whether the goal is optimization vs replacement.
+
+---
+
 ## Sanitization Model
 
 The exporter follows a structure-preserving sanitization approach.

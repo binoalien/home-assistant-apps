@@ -4,6 +4,7 @@
 
 This document covers exporter architecture, phases, configuration behavior, and troubleshooting.
 Shared canonical concepts (domains, sanitization, uncertainty categories) are referenced from `DOC_BLOCKS.md`.
+Canonical documentation responsibilities are in `DOC_BLOCKS.md` → **“Documentation Roles”**.
 
 ## 1. Overview
 
@@ -33,41 +34,10 @@ For practical two-instance usage and prompts, see **`CHATGPT_WORKFLOWS.md`**.
 
 ## 2. Core Principles
 
-### 2.1 Analysis over Backup
+Canonical principles are defined in `DOC_BLOCKS.md` → **“Core Principles”**.
 
-Prioritized:
-- structure
-- relationships
-- runtime context
-- diagnostics
-- downstream usability
-
-Not prioritized:
-- raw one-to-one replication
-- restore completeness
-
-### 2.2 Structure-Preserving Sanitization
-
-The exporter aims to:
-- remove secrets and sensitive operational values
-- preserve analyzable structure
-- preserve linkable references
-- keep downstream graph reconstruction possible
-
-Usually preserved:
-- slugs
-- versions
-- domains
-- entity relationships
-- device mappings
-- config-entry linkage
-
-### 2.3 Single Output Artifact
-
-The exporter works in a temporary internal work directory, but the user-facing result is:
-- exactly one `.tar.gz`
-- written to `/share`
-- with no leftover extracted export tree
+Operationally in this technical document:
+- these principles are applied to phase behavior, report interpretation, and troubleshooting expectations.
 
 ---
 
