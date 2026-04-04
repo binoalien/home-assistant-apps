@@ -24,6 +24,8 @@ It produces a package that:
 
 It is **not** a backup or restore tool.
 
+In short: this app is not a backup or restore tool.
+
 ## Install
 
 1. Add the repository with the link above.
@@ -36,6 +38,21 @@ It is **not** a backup or restore tool.
 2. Start the app manually.
 3. Take the resulting `.tar.gz` archive from `/share`.
 4. Upload the archive to another ChatGPT instance.
+
+## Recommended use
+
+### Improve an existing system
+
+- generate an export
+- hand the archive to ChatGPT
+- analyze first, then optimize and refactor
+
+### Rebuild from scratch without legacy baggage
+
+- generate an export
+- extract requirements and critical behavior
+- define a clean target architecture
+- rebuild deliberately instead of polishing legacy structure
 
 ## What the export can include
 
