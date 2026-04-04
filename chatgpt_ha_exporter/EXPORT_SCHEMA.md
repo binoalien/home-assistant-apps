@@ -1,5 +1,10 @@
 # ChatGPT HA Exporter – Export Schema
 
+## Scope
+
+This document defines the formal structural/semantic export contract (required vs optional artifacts, domain rules, and validation semantics).
+Canonical shared concept blocks are referenced from `DOC_BLOCKS.md`.
+
 ## 1. Purpose
 
 This document defines the **expected export structure** of the ChatGPT HA Exporter.
@@ -43,13 +48,9 @@ The exact prefix may vary depending on exporter configuration.
 
 ## 3. Top-Level Structure
 
-The export root may contain the following top-level directories:
+The canonical top-level domain list is documented in **`DOC_BLOCKS.md` → “Top-Level Export Domains”**.
 
-- `source_sanitized/`
-- `normalized/`
-- `inventory/`
-- `runtime/`
-- `metadata/`
+For contract purposes, this schema still defines required vs optional directory presence below.
 
 ### Required top-level directories
 
@@ -322,11 +323,7 @@ Expected purpose:
 
 - classify residual uncertainty
 
-Expected categories:
-
-- `hard_export_gap`
-- `export_scope_gap`
-- `principled_uncertainty`
+Expected categories are defined canonically in **`DOC_BLOCKS.md` → “Uncertainty Categories”**.
 
 ### `inventory/addon_options_profiles.json`
 
@@ -512,29 +509,11 @@ The exporter must not:
 
 ## 11. Sanitization Contract
 
-## 11.1 Should Be Redacted
+Canonical sanitization categories are defined in **`DOC_BLOCKS.md` → “Sanitization Model”**.
 
-Examples:
+This section defines schema-specific behavior that downstream validators should enforce.
 
-- secrets
-- tokens
-- webhook IDs
-- client secrets
-- auth/session internals
-- directly exploitable endpoints where necessary
-
-## 11.2 Should Usually Remain Visible
-
-Examples:
-
-- slugs
-- versions
-- non-sensitive domains
-- file names when not sensitive
-- component names
-- analytical structure markers
-
-## 11.3 Confidence Rule
+## 11.1 Confidence Rule
 
 If a source is missing, derived reports should prefer:
 

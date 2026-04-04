@@ -1,5 +1,10 @@
 # ChatGPT HA Exporter – Technical Documentation
 
+## Scope
+
+This document covers exporter architecture, phases, configuration behavior, and troubleshooting.
+Shared canonical concepts (domains, sanitization, uncertainty categories) are referenced from `DOC_BLOCKS.md`.
+
 ## 1. Overview
 
 The ChatGPT HA Exporter generates a **sanitized, structure-preserving analysis package** from Home Assistant.
@@ -122,62 +127,9 @@ The exporter derives additional analysis artifacts such as:
 
 ## 4. Export Domains
 
-### 4.1 `source_sanitized/`
+For canonical top-level export domains, see **`DOC_BLOCKS.md` → “Top-Level Export Domains”**.
 
-Sanitized copies of relevant Home Assistant source material.
-
-Typical contents:
-- `config/`
-- `dashboards/`
-- `blueprints/`
-- `custom_components/`
-- `python_scripts/`
-- `pyscript/`
-- `appdaemon/`
-- `esphome/`
-- theme files
-
-### 4.2 `normalized/`
-
-Analysis-friendly JSON views.
-
-Typical contents:
-- `normalized/storage/*.json`
-- structure-preserving normalized storage views
-
-### 4.3 `inventory/`
-
-Structured reports and inventories.
-
-Typical contents:
-- core/supervisor/add-on inventories
-- config/storage inventories
-- helper/template source definitions
-- relationship report
-- security report
-- integration profiles
-- uncertainty register
-
-### 4.4 `runtime/`
-
-Runtime-derived context.
-
-Typical contents:
-- state snapshots
-- snapshot summaries/deltas
-- logs
-- recorder summaries and samples
-
-### 4.5 `metadata/`
-
-Export metadata.
-
-Typical contents:
-- `export_manifest.json`
-- `export_report.json`
-- `export_summary.md`
-- `checksums.sha256`
-- operator intent artifacts
+This file focuses on operational interpretation (pipeline and report usage), while formal required/optional contract details remain in **`EXPORT_SCHEMA.md`**.
 
 ---
 
@@ -230,38 +182,15 @@ Summarizes structure-level security context such as:
 
 ### 5.6 `uncertainty_register.json`
 
-Classifies remaining uncertainty as:
-- `hard_export_gap`
-- `export_scope_gap`
-- `principled_uncertainty`
+Uses canonical uncertainty categories from **`DOC_BLOCKS.md` → “Uncertainty Categories”**.
 
 ---
 
 ## 6. Sanitization Model
 
-### 6.1 Redacted
+For canonical sanitization definitions, see **`DOC_BLOCKS.md` → “Sanitization Model”**.
 
-Examples:
-- secrets
-- tokens
-- webhook IDs
-- client secrets
-- sensitive endpoints
-- directly exploitable internals where required
-
-### 6.2 Preserved
-
-Examples:
-- slugs
-- versions
-- domains
-- non-sensitive structure
-- analyzable relationships
-- useful inventory markers
-
-### 6.3 Stable Pseudonymization
-
-Where values must remain referencable but should not remain raw, the exporter uses stable pseudonyms so relationships remain analyzable.
+This document uses that model as the baseline for interpreting export artifacts and troubleshooting outcomes.
 
 ---
 

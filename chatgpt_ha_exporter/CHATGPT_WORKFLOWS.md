@@ -1,5 +1,10 @@
 # ChatGPT HA Exporter – Recommended Workflows with ChatGPT
 
+## Scope
+
+This document only covers workflow design, handoff discipline, and prompt usage across ChatGPT instances.
+Shared canonical concept blocks are referenced from `DOC_BLOCKS.md`; export-structure contract details remain in `EXPORT_SCHEMA.md`.
+
 This document explains the **operational use** of ChatGPT HA Exporter with ChatGPT.
 
 Documentation roles:
@@ -74,10 +79,7 @@ Only then should another instance propose concrete changes.
 
 ### 2.3 Separate facts, inferences, and uncertainty
 
-Always distinguish:
-- **facts**
-- **inferences**
-- **uncertainties**
+Always distinguish facts, inferences, and uncertainties. For uncertainty category labels, use **`DOC_BLOCKS.md` → “Uncertainty Categories”**.
 
 ### 2.4 Add operator intent when possible
 

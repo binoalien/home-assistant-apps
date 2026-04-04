@@ -1,5 +1,10 @@
 # ChatGPT HA Exporter
 
+## Scope
+
+This README provides high-level purpose, installation, and usage guidance only.
+Canonical shared concept details are maintained in `DOC_BLOCKS.md`; formal structure contract details are maintained in `EXPORT_SCHEMA.md`.
+
 [Add Binoalien Home Assistant Apps to Home Assistant](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fbinoalien%2Fhome-assistant-apps)
 
 **ChatGPT HA Exporter** generates a sanitized, structure-preserving analysis package from Home Assistant.
@@ -128,13 +133,7 @@ These files can document:
 
 ## High-level export domains
 
-The archive typically contains these top-level areas:
-
-- `source_sanitized/`
-- `normalized/`
-- `inventory/`
-- `runtime/`
-- `metadata/`
+For the canonical top-level domain list, see **`DOC_BLOCKS.md` → “Top-Level Export Domains”**.
 
 ## Further documentation
 
